@@ -35,6 +35,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - run: ls -r
+
       - name: Ensure Bounded Context is initialized
         uses: gruntwork-io/terragrunt-action@v2
         env:
