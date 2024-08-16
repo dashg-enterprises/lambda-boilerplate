@@ -48,4 +48,4 @@ jobs:
           TF_VERSION: ${{ env.TF_VERSION }}
           TG_VERSION: ${{ env.TG_VERSION }}
           tg_dir: ${{ env.TG_DIR }}
-          tg_command: 'apply --terragrunt-source ../../../..//iac/initialization'
+          tg_command: 'apply --terragrunt-source ../../../../..//iac/initialization'
