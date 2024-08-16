@@ -1,4 +1,4 @@
-name: CI Build Step - Deploy Image to ECR
+name: CI Build Step - Deploy Zip to S3
 
 on: workflow_dispatch
 
