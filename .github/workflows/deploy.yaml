@@ -1,0 +1,67 @@
+name: CD Step - Deploy to AWS
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "The environment to deploy"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - uat
+          - prod
+  # pull_request:
+  #   branches: 
+  #     - main
+  #   types: [closed]
+
+concurrency: one-deploy-at-a-time
+
+env:
+  AWS_REGION: us-east-1              
+  S3_REPOSITORY: lambdaboilerplate-builds
+  TF_VERSION: '1.9.3'
+  TG_VERSION: '0.63.6'
+  TG_DIR: 'live/aws/${{ inputs.environment }}/bounded-context/applications/lambda-boilerplate'
+  TG_LOCAL_PATH: 'deploy'
+
+jobs:
+  deploy:
+    # if: ${{ github.event.pull_request.merged }}
+    name: Build, Test, & Deploy
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Checkout cloud-deployment
+        uses: actions/checkout@v4
+        with:
+          ref: 'feature/aws-lambda-boilerplate-deployment'
+          repository: dashg-enterprises/cloud-deployment
+          token: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          path: ${{ env.TG_LOCAL_PATH }}
+          sparse-checkout: |
+            ${{ TG_DIR }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to AWS
+        uses: gruntwork-io/terragrunt-action@v2
+        env:
+          INPUT_PRE_EXEC_1: |
+            git config --global url."https://user:${{secrets.CLOUD_DEPLOYMENT_PAT}}@github.com".insteadOf "https://github.com"
+          INPUT_PRE_EXEC_2: |
+            git config --global --list
+        with:
+          TF_VERSION: ${{ env.TF_VERSION }}
+          TG_VERSION: ${{ env.TG_VERSION }}
+          tg_dir: '${{ env.TG_LOCAL_PATH }}/${{ env.TG_DIR }}'
+          tg_command: 'apply --terragrunt-source ../../../../../../..//iac'
