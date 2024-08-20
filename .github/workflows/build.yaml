@@ -1,7 +1,17 @@
 name: CI Build Step - Deploy Zip to S3
 
-on: workflow_dispatch
-
+on: 
+  workflow_dispatch:
+    inputs:
+      lambda:
+        description: "The lambda to build"
+        required: true
+        default: "src"
+        type: choice
+        options:
+          - src
+          - src2
+          
 env:
   AWS_REGION: us-east-1              
   S3_REPOSITORY: lambdaboilerplate-builds
@@ -55,3 +65,5 @@ jobs:
           TG_VERSION: ${{ env.TG_VERSION }}
           tg_dir: ${{ env.TG_DIR }}
           tg_command: 'apply --terragrunt-source ../../../../..//iac/initialization'
+      - name: Deploy build to bucket
+        run: aws s3 cp out/index.zip s3://${{ S3_REPOSITORY }}/${{ inputs.lambda }}-${{ github.sha }}.zip
