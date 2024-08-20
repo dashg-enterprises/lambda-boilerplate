@@ -4,8 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prebuild": "rm -rf out",
+    "build-dev": "esbuild src/index.ts --bundle --sourcemap --platform=node --target=es2020 --outfile=out/index.js",
+    "build": "esbuild src/index.ts --bundle --minify --platform=node --target=es2020 --outfile=out/index.js",
+    "postbuild": "cd out && zip -r index.zip index.js*",
+    "postbuild-windows": "cd out && tar -a -cf index.zip index.js*"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.143",
+    "esbuild": "^0.23.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-eventbridge": "^3.633.0",
+    "aws-lambda": "^1.0.7"
+  }
 }
