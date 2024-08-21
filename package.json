@@ -7,7 +7,7 @@
     "prebuild": "rm -rf out",
     "build-dev": "esbuild src/index.ts --sourcemap --platform=node --target=es2020 --outfile=out/index.js",
     "build": "esbuild src/index.ts --bundle --minify --platform=node --target=es2020 --outfile=out/index.js",
-    "postbuild": "cd out && zip -r index.zip index.js",
+    "postbuild": "cd out && zip index.zip index.js",
     "postbuild-windows": "cd out && tar -a -cf index.zip index.js*"
   },
   "author": "",
