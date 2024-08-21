@@ -55,8 +55,8 @@ resource "aws_lambda_function" "lambda_bounded_context" {
   s3_bucket     = var.build_bucket_name
   s3_key        = var.build_id
   role          = aws_iam_role.lambda_role.arn
-  handler       = "index.lambdaHandler"
-  runtime       = "nodejs18.x"
+  handler       = "index.handler"
+  runtime       = "nodejs20.x"
   depends_on = [
     aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role
   ]
