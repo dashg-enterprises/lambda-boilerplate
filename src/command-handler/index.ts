@@ -6,7 +6,7 @@ import { EventBridgeClient } from '@aws-sdk/client-eventbridge';
 export const handler: Handler<EventBridgeEvent> = async (event, context) => {
     console.log('EVENT: \n' + JSON.stringify(event, null, 2));
 
-    const publisher = new DomainEventPublisher(new EventBridgeClient(), "Example", "ExampleEventBus_local");
+    const publisher = new DomainEventPublisher(new EventBridgeClient(), "Example", "example-command-handler-localEventBus");
     await publisher.publish({greeting: "Hello, world!"}, "greeting");
 
     return context.logStreamName;
