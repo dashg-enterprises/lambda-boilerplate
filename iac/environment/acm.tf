@@ -19,8 +19,7 @@ resource "aws_api_gateway_domain_name" "gw_domain" {
 }
 
 resource "aws_api_gateway_base_path_mapping" "gw_mapping" {
-  domain_name = "local.api.dashglabs.com" #local.environment_api_fqdn
+  domain_name = aws_api_gateway_domain_name.gw_domain.domain_name #"local.api.dashglabs.com" #local.environment_api_fqdn
   api_id      = aws_api_gateway_rest_api.my_api.id
   stage_name  = aws_api_gateway_deployment.deployment.stage_name
-  depends_on = [aws_acm_certificate_validation.cert_validation]
 }

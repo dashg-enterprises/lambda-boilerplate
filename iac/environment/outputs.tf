@@ -25,3 +25,7 @@ output "apigw_name" {
 output "apigw_root_resource_id" {
   value = aws_api_gateway_rest_api.my_api.root_resource_id
 }
+
+output "url" {
+  value = "https://${aws_api_gateway_domain_name.gw_domain.domain_name}"
+}
