@@ -4,13 +4,6 @@
 #   path_part = "${lower(var.aggregate_root_name)}s"
 # }
 
-# resource "aws_api_gateway_authorizer" "auth" {
-#   name          = "${var.bounded_context_name}-authorizer"
-#   rest_api_id   = var.apigw_id
-#   type          = "COGNITO_USER_POOLS"
-#   provider_arns = [aws_cognito_user_pool.pool.arn]
-# }
-
 # resource "aws_api_gateway_method" "proxy" {
 #   rest_api_id = var.apigw_id
 #   resource_id = aws_api_gateway_resource.root.id
@@ -18,7 +11,7 @@
 #   # authorization = "NONE"
 
 #   authorization = "COGNITO_USER_POOLS"
-#   authorizer_id = aws_api_gateway_authorizer.auth.id
+#   authorizer_id = var.authorizer_id
 # }
 
 # resource "aws_api_gateway_integration" "lambda_integration" {
@@ -71,7 +64,7 @@
 #   # authorization = "NONE"
 
 #   authorization = "COGNITO_USER_POOLS"
-#   authorizer_id = aws_api_gateway_authorizer.auth.id
+#   authorizer_id = var.authorizer_id
 # }
 
 # resource "aws_api_gateway_integration" "options_integration" {
@@ -116,17 +109,20 @@
 #   ]
 # }
 
+# resource "aws_api_gateway_deployment" "deployment" {
+#   depends_on = [
+#     aws_api_gateway_integration.lambda_integration,
+#     aws_api_gateway_integration.options_integration
+#   ]
+#   stage_name = "main"
+#   rest_api_id = var.apigw_id
+# }
 
-
-# # resource "aws_api_gateway_deployment" "deployment" {
-# #   depends_on = [
-# #     aws_api_gateway_integration.lambda_integration,
-# #     aws_api_gateway_integration.options_integration
-# #   ]
-
-# #   rest_api_id = var.apigw_id
-# #   stage_name  = "apigw"
-# # }
+# resource "aws_api_gateway_base_path_mapping" "gw_mapping" {
+#   domain_name = "local.api.dashglabs.com" #local.environment_api_fqdn
+#   api_id      = var.apigw_id
+#   stage_name  = aws_api_gateway_deployment.deployment.stage_name
+# }
 
 # resource "aws_iam_role_policy_attachment" "lambda_basic" {
 #   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
@@ -139,5 +135,5 @@
 #   function_name = aws_lambda_function.lambda_bounded_context.function_name
 #   principal = "apigateway.amazonaws.com"
 
-#   source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*/*"
+#   source_arn = "${var.apigw_execution_arn}/*/*/*"
 # }

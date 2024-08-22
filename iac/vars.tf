@@ -22,10 +22,18 @@ variable "build_id" {
   type = string
 }
 
+variable "apigw_execution_arn" {
+  type = string
+}
+
 variable "apigw_id" {
   type = string
 }
 
 variable "apigw_root_resource_id" {
+  type = string
+}
+
+variable "authorizer_id" {
   type = string
 }
