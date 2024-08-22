@@ -1,6 +1,8 @@
 import { Handler } from 'aws-lambda';
 import { EventBridgeEvent, DomainEventPublisher } from './publishEvent';
 import { EventBridgeClient } from '@aws-sdk/client-eventbridge';
+import { SnapshotRepository } from './SnapshotRepository';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 /*global handler @preserve*/
 export const handler: Handler<EventBridgeEvent> = async (event, context) => {
@@ -8,6 +10,9 @@ export const handler: Handler<EventBridgeEvent> = async (event, context) => {
 
     const publisher = new DomainEventPublisher(new EventBridgeClient(), "Example", "example-command-handler-localEventBus");
     await publisher.publish({greeting: "Hello, world!"}, "greeting");
+
+    const snapshotRepository = new SnapshotRepository(new DynamoDBClient(), "example-command-handler-localSnapshots");
+    await snapshotRepository.save({state: "Said hello"});
 
     return context.logStreamName;
 };
