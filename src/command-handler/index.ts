@@ -12,7 +12,7 @@ export const handler: Handler<EventBridgeEvent> = async (event, context) => {
     await publisher.publish({greeting: "Hello, world!"}, "greeting");
 
     const snapshotRepository = new SnapshotRepository(new DynamoDBClient(), "example-command-handler-localSnapshots");
-    await snapshotRepository.save({state: "Said hello"});
+    await snapshotRepository.save({id: Math.random().toString().substring(2), state: "Said hello"});
 
     return context.logStreamName;
 };

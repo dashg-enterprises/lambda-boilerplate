@@ -28,12 +28,18 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
        "s3:GetObject",
        "logs:CreateLogGroup",
        "logs:CreateLogStream",
-       "logs:PutLogEvents"
+       "logs:PutLogEvents",
+       "dynamodb:PutItem",
+       "dynamodb:GetItem",
+       "dynamodb:UpdateItem",
+       "dynamodb:DeleteItem",
      ],
       "Resource": [
         "${aws_cloudwatch_event_bus.event_bridge_bus.arn}",
         "arn:aws:s3:::${var.build_bucket_name}/*",
-        "arn:aws:logs:*:*:*"
+        "arn:aws:logs:*:*:*",
+        "${aws_dynamodb_table.aggregate_snapshots.arn}",
+        "${aws_dynamodb_table.aggregate_event_log}"
       ],
      "Effect": "Allow"
    }
