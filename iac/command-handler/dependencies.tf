@@ -40,10 +40,10 @@ resource "aws_dynamodb_table" "aggregate_snapshots" {
   }
 
   tags = {
-    Name = "${var.aggregate_root_name}Snapshots"
+    Name = "${var.application_name}Snapshots"
   }
 }
 
 resource "aws_cloudwatch_event_bus" "event_bridge_bus" {
-  name = "${var.aggregate_root_name}EventBus"
+  name = "${var.application_name}EventBus"
 }

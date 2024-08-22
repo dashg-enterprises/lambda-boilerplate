@@ -24,22 +24,19 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
  "Statement": [
    {
      "Action": [
+       "events:PutEvents",
+       "s3:GetObject",
        "logs:CreateLogGroup",
        "logs:CreateLogStream",
        "logs:PutLogEvents"
      ],
-     "Resource": "arn:aws:logs:*:*:*",
-     "Effect": "Allow"
-   },
-   {
-      "Action": [
-        "s3:GetObject"
-      ],
-      "Effect": "Allow",
       "Resource": [
-        "arn:aws:s3:::${var.build_bucket_name}/*"
-      ]
-    }
+        "${aws_cloudwatch_event_bus.event_bridge_bus.arn}",
+        "arn:aws:s3:::${var.build_bucket_name}/*",
+        "arn:aws:logs:*:*:*"
+      ],
+     "Effect": "Allow"
+   }
  ]
 }
 EOF
