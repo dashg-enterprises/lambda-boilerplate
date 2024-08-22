@@ -22,3 +22,10 @@ resource "aws_cognito_user" "example" {
   username     = "chadgarlandscg"
   password     = "TFtest@1234"
 }
+
+resource "aws_api_gateway_authorizer" "auth" {
+  name          = "${local.organization_environment_name}-authorizer"
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  type          = "COGNITO_USER_POOLS"
+  provider_arns = [aws_cognito_user_pool.pool.arn]
+}

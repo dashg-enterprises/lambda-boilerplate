@@ -1,5 +1,6 @@
 data "aws_route53_zone" "my_domain" {
   name = "dashglabs.com"
+  private_zone = false
 }
 
 data "aws_region" "current" {}
@@ -37,12 +38,27 @@ resource "aws_acm_certificate_validation" "cert_validation" {
   validation_record_fqdns = [for record in aws_route53_record.validation_record : record.fqdn]
 }
 
-resource "aws_route53_record" "api_domain_record" {
-  name = "${var.environment_name}.api" # The subdomain (dev.api.dashglabs.com)
-  type = "CNAME"
-  ttl = "300" # TTL in seconds
+# resource "aws_route53_record" "api_domain_record" {
+#   name = "${var.environment_name}.api" # The subdomain (dev.api.dashglabs.com)
+#   type = "CNAME"
+#   ttl = "300" # TTL in seconds
 
-  records = ["${aws_api_gateway_rest_api.my_api.id}.execute-api.${data.aws_region.current.name}.amazonaws.com"]
+#   records = ["${aws_api_gateway_rest_api.my_api.id}.execute-api.${data.aws_region.current.name}.amazonaws.com"]
 
-  zone_id = data.aws_route53_zone.my_domain.zone_id
+#   zone_id = data.aws_route53_zone.my_domain.zone_id
+# }
+
+# Example DNS record using Route53.
+# Route53 is not specifically required; any DNS host can be used.
+resource "aws_route53_record" "apigw_domain_alias" {
+  zone_id = data.aws_route53_zone.my_domain.zone_id # See aws_route53_zone for how to create this
+
+  name = aws_api_gateway_domain_name.gw_domain.domain_name
+  type = "A"
+
+  alias {
+    name                   = aws_api_gateway_domain_name.gw_domain.cloudfront_domain_name
+    zone_id                = aws_api_gateway_domain_name.gw_domain.cloudfront_zone_id
+    evaluate_target_health = false
+  }
 }
