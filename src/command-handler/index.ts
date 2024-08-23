@@ -8,10 +8,15 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 export const handler: Handler<EventBridgeEvent> = async (event, context) => {
     console.log('EVENT: \n' + JSON.stringify(event, null, 2));
 
-    const publisher = new DomainEventPublisher(new EventBridgeClient(), "Example", "example-command-handler-localEventBus");
+    const eventBusName = process.env.EVENT_BUS_NAME;
+    const snapshotTableName = process.env.SNAPSHOT_TABLE_NAME;
+    const eventLogTableName = process.env.EVENT_LOG_TABLE_NAME;
+    console.log(eventBusName, snapshotTableName, eventLogTableName);
+
+    const publisher = new DomainEventPublisher(new EventBridgeClient(), "Example", eventBusName);
     await publisher.publish({greeting: "Hello, world!"}, "greeting");
 
-    const snapshotRepository = new SnapshotRepository(new DynamoDBClient(), "example-command-handler-localSnapshots");
+    const snapshotRepository = new SnapshotRepository(new DynamoDBClient(), snapshotTableName);
     await snapshotRepository.save({id: Math.random().toString().substring(2), state: "Said hello"});
 
     return context.logStreamName;
