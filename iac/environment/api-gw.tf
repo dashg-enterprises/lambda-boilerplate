@@ -8,18 +8,21 @@ resource "aws_api_gateway_rest_api" "my_api" {
       title   = "DashG Labs API"
       version = "1.0"
     }
-    paths = merge({
-      "/ip-ranges" = {
-        get = {
-          x-amazon-apigateway-integration = {
-            httpMethod           = "GET"
-            payloadFormatVersion = "1.0"
-            type                 = "HTTP_PROXY"
-            uri                  = "https://ip-ranges.amazonaws.com/ip-ranges.json"
+    paths = merge(var.bounded_contexts[*].openapi_spec...)
+    components = {
+      securitySchemes = {
+        UserPool = {
+          type = "apiKey"
+          name = "Authorization"
+          in = "header"
+          x-amazon-apigateway-authtype = "cognito_user_pools"
+          x-amazon-apigateway-authorizer = {
+            type = "cognito_user_pools"
+            providerARNs = [ "${aws_cognito_user_pool.pool.arn}" ]
           }
         }
       }
-    }, var.bounded_contexts[0].openapi_spec)
+    }
   })
 
   put_rest_api_mode = "merge"
