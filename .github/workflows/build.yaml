@@ -69,4 +69,4 @@ jobs:
       - name: Deploy build to bucket
         run: aws s3 cp out/index.zip s3://${{ env.S3_REPOSITORY }}/${{ github.ref_name }}-${{ inputs.lambda }}-${{ github.sha }}.zip
       - name: "Print build id"
-        run: echo "${{ github.ref_name }}-${{ inputs.lambda }}-${{ github.sha }}.zip"
+        run: echo "### BUILD ID - ${{ github.ref_name }}-${{ inputs.lambda }}-${{ github.sha }}.zip" >> $GITHUB_STEP_SUMMARY
