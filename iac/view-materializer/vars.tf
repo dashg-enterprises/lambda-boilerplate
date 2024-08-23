@@ -1,7 +1,3 @@
-variable "environment_name" {
-  type = string
-}
-
 variable "bounded_context_name" {
   type = string
 }

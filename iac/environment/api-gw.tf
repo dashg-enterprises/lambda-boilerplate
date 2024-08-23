@@ -5,7 +5,7 @@ resource "aws_api_gateway_rest_api" "my_api" {
   body = jsonencode({
     openapi = "3.0.1"
     info = {
-      title   = "ip-ranges"
+      title   = "DashG Labs API"
       version = "1.0"
     }
     paths = {
@@ -23,9 +23,17 @@ resource "aws_api_gateway_rest_api" "my_api" {
         post = {
           x-amazon-apigateway-integration = {
             httpMethod           = "POST"
-            payloadFormatVersion = "2.0"
+            payloadFormatVersion = "1.0"
             type                 = "AWS_PROXY"
             uri                  = var.lambda_uri
+          }
+        }
+        get = {
+          x-amazon-apigateway-integration = {
+            httpMethod           = "POST"
+            payloadFormatVersion = "1.0"
+            type                 = "AWS_PROXY"
+            uri                  = var.view_lambda_uri
           }
         }
       }
@@ -64,6 +72,15 @@ resource "aws_lambda_permission" "apigw_lambda" {
   statement_id = "AllowExecutionFromAPIGateway"
   action = "lambda:InvokeFunction"
   function_name = var.lambda_name
+  principal = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*/*"
+}
+
+resource "aws_lambda_permission" "apigw_view_lambda" {
+  statement_id = "AllowExecutionFromAPIGateway"
+  action = "lambda:InvokeFunction"
+  function_name = var.view_lambda_name
   principal = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*/*"

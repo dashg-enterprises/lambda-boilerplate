@@ -21,3 +21,11 @@ variable "lambda_uri" {
 variable "lambda_name" {
   type = string
 }
+
+variable "view_lambda_uri" {
+  type = string
+}
+
+variable "view_lambda_name" {
+  type = string
+}
