@@ -14,10 +14,21 @@ export const handler: Handler<EventBridgeEvent> = async (event, context) => {
     console.log(eventBusName, snapshotTableName, eventLogTableName);
 
     const publisher = new DomainEventPublisher(new EventBridgeClient(), "Example", eventBusName);
-    await publisher.publish({greeting: "Hello, world!"}, "greeting");
+    var domainEvent = {greeting: "Hello, world!"};
+    await publisher.publish(domainEvent, "greeting");
 
     const snapshotRepository = new SnapshotRepository(new DynamoDBClient(), snapshotTableName);
-    await snapshotRepository.save({id: Math.random().toString().substring(2), state: "Said hello"});
+    const snapshot = {id: Math.random().toString().substring(2), state: "Said hello"};
+    await snapshotRepository.save(snapshot);
 
-    return context.logStreamName;
+    return {
+        isBase64Encoded: false,
+        statusCode: 200,
+        headers: {},
+        multiValueHeaders: {},
+        body: JSON.stringify({
+            domainEvent,
+            snapshot
+        })
+    };
 };

@@ -13,3 +13,11 @@ variable "environment_subdomain" {
 variable "domain_name" {
   type = string
 }
+
+variable "lambda_uri" {
+  type = string
+}
+
+variable "lambda_name" {
+  type = string
+}
