@@ -8,7 +8,7 @@ resource "aws_api_gateway_rest_api" "my_api" {
       title   = "DashG Labs API"
       version = "1.0"
     }
-    paths = {
+    paths = merge({
       "/ip-ranges" = {
         get = {
           x-amazon-apigateway-integration = {
@@ -19,25 +19,7 @@ resource "aws_api_gateway_rest_api" "my_api" {
           }
         }
       }
-      "/examples" = {
-        post = {
-          x-amazon-apigateway-integration = {
-            httpMethod           = "POST"
-            payloadFormatVersion = "1.0"
-            type                 = "AWS_PROXY"
-            uri                  = var.lambda_uri
-          }
-        }
-        get = {
-          x-amazon-apigateway-integration = {
-            httpMethod           = "POST"
-            payloadFormatVersion = "1.0"
-            type                 = "AWS_PROXY"
-            uri                  = var.view_lambda_uri
-          }
-        }
-      }
-    }
+    }, var.bounded_contexts[0].openapi_spec)
   })
 
   put_rest_api_mode = "merge"
@@ -55,11 +37,6 @@ resource "aws_api_gateway_deployment" "deployment" {
   }
 
   stage_name = "main"
-
-  # depends_on = [
-  #   aws_api_gateway_integration.lambda_integration,
-  #   aws_api_gateway_integration.options_integration
-  # ]
 }
 
 # resource "aws_api_gateway_stage" "main_stage" {
@@ -69,18 +46,10 @@ resource "aws_api_gateway_deployment" "deployment" {
 # }
 
 resource "aws_lambda_permission" "apigw_lambda" {
+  count = length(var.bounded_contexts[0].lambdas)
   statement_id = "AllowExecutionFromAPIGateway"
   action = "lambda:InvokeFunction"
-  function_name = var.lambda_name
-  principal = "apigateway.amazonaws.com"
-
-  source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*/*"
-}
-
-resource "aws_lambda_permission" "apigw_view_lambda" {
-  statement_id = "AllowExecutionFromAPIGateway"
-  action = "lambda:InvokeFunction"
-  function_name = var.view_lambda_name
+  function_name = var.bounded_contexts[0].lambdas[count.index]
   principal = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.my_api.execution_arn}/*/*/*"
