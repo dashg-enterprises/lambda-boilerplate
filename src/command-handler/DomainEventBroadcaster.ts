@@ -1,5 +1,6 @@
 import { SNSClient } from "@aws-sdk/client-sns";
 import { PublishCommand } from "@aws-sdk/client-sns";
+import { DomainEvent } from "./DomainEvent";
 
 export class DomainEventBroadcaster {
     client: SNSClient;
@@ -11,11 +12,12 @@ export class DomainEventBroadcaster {
     }
 
     async publish(
-        domainEvent: object
+        domainEvent: DomainEvent
       ) {
         const response = await this.client.send(
           new PublishCommand({
             Message: JSON.stringify(domainEvent),
+            MessageGroupId: domainEvent.aggregateId,
             TopicArn: this.topicArn,
           }),
         );

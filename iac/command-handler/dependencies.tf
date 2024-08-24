@@ -64,7 +64,7 @@ resource "aws_sqs_queue" "foreign_context_subscriber" {
   name = "foreign-event-listener-queue"
 
   redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.terraform_queue_deadletter.arn
+    deadLetterTargetArn = aws_sqs_queue.foreign_context_dlq.arn
     maxReceiveCount     = 4
   })
 }
