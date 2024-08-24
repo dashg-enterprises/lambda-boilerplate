@@ -13,7 +13,3 @@ output "snapshot_table_name" {
 output "lambda_uri" {
   value = aws_lambda_function.lambda_bounded_context.invoke_arn
 }
-
-output "event_topic_arn" {
-  value = aws_sns_topic.event_log_broadcast.arn
-}
