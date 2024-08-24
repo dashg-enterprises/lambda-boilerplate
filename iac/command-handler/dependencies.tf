@@ -47,3 +47,37 @@ resource "aws_dynamodb_table" "aggregate_snapshots" {
 resource "aws_cloudwatch_event_bus" "event_bridge_bus" {
   name = "${var.application_name}EventBus"
 }
+
+resource "aws_sns_topic" "event_log_broadcast" {
+  name                        = "${var.application_name}-topic.fifo"
+  fifo_topic                  = true
+  content_based_deduplication = true
+}
+
+resource "aws_sns_topic_subscription" "foreign_context_subscription" {
+  topic_arn = aws_sns_topic.event_log_broadcast.arn
+  protocol  = "sqs"
+  endpoint  = aws_sqs_queue.foreign_context_subscriber.arn
+}
+
+resource "aws_sqs_queue" "foreign_context_subscriber" {
+  name = "foreign-event-listener-queue"
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.terraform_queue_deadletter.arn
+    maxReceiveCount     = 4
+  })
+}
+
+resource "aws_sqs_queue" "foreign_context_dlq" {
+  name = "foreign-event-listener-dlq"
+}
+
+resource "aws_sqs_queue_redrive_allow_policy" "foreign_context_dlq_policy" {
+  queue_url = aws_sqs_queue.foreign_context_dlq.id
+
+  redrive_allow_policy = jsonencode({
+    redrivePermission = "byQueue",
+    sourceQueueArns   = [aws_sqs_queue.foreign_context_subscriber.arn]
+  })
+}

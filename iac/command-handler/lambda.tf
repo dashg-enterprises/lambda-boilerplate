@@ -30,14 +30,16 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
         "dynamodb:PutItem",
         "dynamodb:GetItem",
         "dynamodb:UpdateItem",
-        "dynamodb:DeleteItem"
+        "dynamodb:DeleteItem",
+        "sns:Publish"
       ],
       Resource = [
         "${aws_cloudwatch_event_bus.event_bridge_bus.arn}",
         "arn:aws:s3:::${var.build_bucket_name}/*",
         "arn:aws:logs:*:*:*",
         "${aws_dynamodb_table.aggregate_snapshots.arn}",
-        "${aws_dynamodb_table.aggregate_event_log.arn}"
+        "${aws_dynamodb_table.aggregate_event_log.arn}",
+        "${aws_sns_topic.event_log_broadcast.arn}"
       ],
       Effect = "Allow"
     }]
@@ -58,6 +60,7 @@ resource "aws_lambda_function" "lambda_bounded_context" {
   runtime       = "nodejs20.x"
   environment {
     variables = {
+      EVENT_TOPIC_ARN = aws_sns_topic.event_log_broadcast.arn
       EVENT_BUS_NAME = aws_cloudwatch_event_bus.event_bridge_bus.name
       EVENT_LOG_TABLE_NAME = aws_dynamodb_table.aggregate_event_log.name
       SNAPSHOT_TABLE_NAME = aws_dynamodb_table.aggregate_snapshots.name
