@@ -31,7 +31,8 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
         "dynamodb:GetItem",
         "dynamodb:UpdateItem",
         "dynamodb:DeleteItem",
-        "sns:Publish"
+        "sns:Publish",
+        "sqs:*"
       ],
       Resource = [
         "${aws_cloudwatch_event_bus.event_bridge_bus.arn}",
@@ -39,7 +40,8 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
         "arn:aws:logs:*:*:*",
         "${aws_dynamodb_table.aggregate_snapshots.arn}",
         "${aws_dynamodb_table.aggregate_event_log.arn}",
-        "${aws_sns_topic.event_log_broadcast.arn}"
+        "${aws_sns_topic.event_log_broadcast.arn}",
+        "${aws_sqs_queue.foreign_context_subscriber.arn}"
       ],
       Effect = "Allow"
     }]

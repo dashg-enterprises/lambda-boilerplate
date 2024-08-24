@@ -44,10 +44,57 @@ resource "aws_dynamodb_table" "aggregate_snapshots" {
   }
 }
 
+resource "aws_cloudwatch_event_bus" "event_bridge_bus" {
+  name = "${var.application_name}EventBus"
+}
+
 resource "aws_sns_topic" "event_log_broadcast" {
   name                        = "${var.application_name}-topic.fifo"
   fifo_topic                  = true
   content_based_deduplication = true
+}
+
+# // External subscriptions
+# Queue policy allowing send messages from the required topic
+data "aws_iam_policy_document" "queue_policy_document" {
+  statement {
+    effect = "Allow"
+    actions = ["sqs:SendMessage"]
+    principals {
+      type        = "Service"
+      identifiers = ["sns.amazonaws.com"]
+    }
+    resources = [aws_sqs_queue.foreign_context_subscriber.arn]
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [var.example_topic_arn]
+    }
+  }
+}
+
+# resource "aws_iam_policy" "iam_policy_for_sqs" {
+#   name        = "${var.application_name}-sqs-policy"
+#   path        = "/"
+#   description = "AWS IAM Policy for managing aws lambda role"
+#   policy      = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [{
+#       Action = [
+#         "sqs:SendMessage"
+#       ],
+#       Resource = [
+#         "${var.example_topic_arn}"
+#       ],
+#       Principal = "sns.amazonaws.com"
+#       Effect = "Allow"
+#     }]
+#   })
+# }
+
+resource "aws_sqs_queue_policy" "queue_policy" {
+  queue_url = aws_sqs_queue.foreign_context_subscriber.id
+  policy    = data.aws_iam_policy_document.queue_policy_document.json
 }
 
 resource "aws_sns_topic_subscription" "foreign_context_subscription" {
