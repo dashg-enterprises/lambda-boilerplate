@@ -35,11 +35,9 @@ export class EventLogRepository {
 
     private toDynamoDbItem(snapshot: object) {
         return Object.entries(snapshot).reduce((item, kvp) => {
-            item[kvp[0]] = typeof(kvp[1]) === 'string' ? {
+            item[kvp[0]] = {
                 "S": kvp[1]
-            } : {
-                "N": kvp[1]
-            };
+            }
             return item;
         }, {} as Record<string, AttributeValue>);
     }

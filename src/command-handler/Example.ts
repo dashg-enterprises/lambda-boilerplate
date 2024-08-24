@@ -51,7 +51,7 @@ export class Example extends Aggregate {
         if (!createExample.name) throw new Error("Name is required for this example.");
 
         const sequenceId = this.eventLog.length + 1;
-        const domainEvent = new ExampleCreated(sequenceId, createExample.correlationId, this.id, createExample.name);
+        const domainEvent = new ExampleCreated(sequenceId.toString(), createExample.correlationId, this.id, createExample.name);
         this.apply(domainEvent);
         return this;
     }
