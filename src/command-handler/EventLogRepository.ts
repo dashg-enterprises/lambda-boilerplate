@@ -35,8 +35,10 @@ export class EventLogRepository {
 
     private toDynamoDbItem(snapshot: object) {
         return Object.entries(snapshot).reduce((item, kvp) => {
-            item[kvp[0]] = {
+            item[kvp[0]] = Number.isNaN(+kvp[1]) ? {
                 "S": kvp[1]
+            } : {
+                "N": kvp[1]
             };
             return item;
         }, {} as Record<string, AttributeValue>);
