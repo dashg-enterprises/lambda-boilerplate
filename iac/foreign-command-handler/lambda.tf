@@ -41,7 +41,7 @@ resource "aws_iam_policy" "iam_policy_for_lambda" {
         "${aws_dynamodb_table.aggregate_snapshots.arn}",
         "${aws_dynamodb_table.aggregate_event_log.arn}",
         "${aws_sns_topic.event_log_broadcast.arn}",
-        "${aws_sqs_queue.foreign_context_subscriber.arn}"
+        "arn:aws:sqs:*:*:*",
       ],
       Effect = "Allow"
     }]
