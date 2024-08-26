@@ -7,10 +7,11 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DomainEventBroadcaster } from './DDD/DomainEventBroadcaster';
 import { SNSClient } from '@aws-sdk/client-sns';
 import { DomainEvent } from './DDD/DomainEvent';
-import { ExampleCreated } from './ExampleCreated';
-import { CreateExample, Example } from './Example';
+import { ExampleCreated } from './events/ExampleCreated';
+import { Example } from './Example';
+import { CreateExample } from "./commands/CreateExample";
 import { EventLogRepository } from './DDD/EventLogRepository';
-import { ExampleRepository } from './ExampleRepository';
+import { ExampleRepository } from './infrastructure/ExampleRepository';
 
 /*global handler @preserve*/
 export const handler: Handler<EventBridgeEvent> = async (event, context) => {

@@ -1,27 +1,9 @@
+import { CreateExample } from "./commands/CreateExample";
 import { Aggregate } from "./DDD/Aggregate";
 import { IDomainEvent } from "./DDD/DomainEvent";
 import { EventLog } from "./DDD/EventLog";
-import { ExampleCreated } from "./ExampleCreated";
-import { ExampleUpdated } from "./ExampleUpdated";
-
-export interface IDomainCommand {
-    correlationId: string;
-}
-
-export abstract class DomainCommand {
-    correlationId: string;
-    constructor(correlationId?: string) {
-        this.correlationId = correlationId || Math.random().toString().substring(2);
-    }
-}
-
-export class CreateExample extends DomainCommand {
-    name: string;
-    constructor(name: string, correlationId?: string) {
-        super(correlationId);
-        this.name = name;
-    }
-}
+import { ExampleCreated } from "./events/ExampleCreated";
+import { ExampleUpdated } from "./events/ExampleUpdated";
 
 export class Example extends Aggregate {
     private name?: string;
