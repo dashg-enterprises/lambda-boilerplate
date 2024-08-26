@@ -37,7 +37,7 @@ export const handler: Handler<EventBridgeEvent> = async (event, context) => {
     const eventLogRepository = new EventLogRepository(new DynamoDBClient(), eventLogTableName);
     const snapshotRepository = new SnapshotRepository(new DynamoDBClient(), snapshotTableName);
     const exampleRepository = new ExampleRepository(eventLogRepository, snapshotRepository);
-    exampleRepository.save(example);
+    await exampleRepository.save(example);
 
     return {
         isBase64Encoded: false,

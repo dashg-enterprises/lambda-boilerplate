@@ -16,6 +16,7 @@ export abstract class AggregateRepository {
     async save(aggregate: Aggregate) {
         await this.eventLogRepository.save(aggregate.getEventLog());
         await this.snapshotRepository.save(aggregate.toSnapshot());
+        return aggregate;
     }
 
     // async get(id: string) {
