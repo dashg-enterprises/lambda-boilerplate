@@ -1,30 +1,30 @@
-import { AttributeValue, DynamoDBClient, PutItemCommand, PutItemCommandInput } from "@aws-sdk/client-dynamodb"; // ES Modules import
+import { PutCommand, DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
 
 export class SnapshotRepository {
     tableName: string;
-    client: DynamoDBClient;
-    constructor(client: DynamoDBClient, tableName: string) {
+    client: DynamoDBDocumentClient;
+    constructor(client: DynamoDBDocumentClient, tableName: string) {
         this.client = client;
         this.tableName = tableName;
     }   
 
     async save(snapshot: object) {
-        const input: PutItemCommandInput = {
-            "Item": this.toDynamoDbItem(snapshot),
-            "ReturnConsumedCapacity": "TOTAL",
-            "TableName": this.tableName
-        };
-        const command = new PutItemCommand(input);
+        const command = new PutCommand({
+            TableName: this.tableName,
+            Item: snapshot
+        });
+        
         const response = await this.client.send(command);
         return response;
     }
 
-    private toDynamoDbItem(snapshot: object) {
-        return Object.entries(snapshot).reduce((item, kvp) => {
-            item[kvp[0]] = {
-                "S": kvp[1]
-            }
-            return item;
-        }, {} as Record<string, AttributeValue>);
+    async getById(id: string) {
+        const command = new GetCommand({
+            TableName: this.tableName,
+            Key: { id }
+          });
+
+        const response = await this.client.send(command);
+        return response.Item as object;
     }
 }
