@@ -1,9 +1,9 @@
 import { AttributeValue, DynamoDBClient, PutItemCommand, PutItemCommandInput } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { DomainEvent } from "./DomainEvent";
-import { EventLogRepository } from "./EventLogRepository";
 import { SnapshotRepository } from "./SnapshotRepository";
 import { Example } from "../command-handler/domain/Example";
 import { Aggregate } from "./Aggregate";
+import { EventLogRepository } from "./EventLogRepository";
 
 export abstract class AggregateRepository {
     eventLogRepository: EventLogRepository;

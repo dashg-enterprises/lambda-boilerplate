@@ -6,6 +6,7 @@ import { DomainEventBroadcaster } from '../DDD/DomainEventBroadcaster';
 import { EventLogRepository } from '../DDD/EventLogRepository';
 import { ExampleRepository } from './infrastructure/ExampleRepository';
 import { ExampleService } from './application/ExampleService';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
 export class Host {
 
@@ -17,8 +18,9 @@ export class Host {
 
         const broadcaster = new DomainEventBroadcaster(eventTopicArn);
         const publisher = new DomainEventPublisher(new EventBridgeClient(), "Example", eventBusName);
-        const eventLogRepository = new EventLogRepository(new DynamoDBClient(), eventLogTableName);
-        const snapshotRepository = new SnapshotRepository(new DynamoDBClient(), snapshotTableName);
+        const docDbClient = DynamoDBDocumentClient.from(new DynamoDBClient());
+        const eventLogRepository = new EventLogRepository(docDbClient, eventLogTableName);
+        const snapshotRepository = new SnapshotRepository(docDbClient, snapshotTableName);
         const exampleRepository = new ExampleRepository(eventLogRepository, snapshotRepository);
         const exampleService = new ExampleService(exampleRepository, broadcaster, publisher);
 
