@@ -1,6 +1,6 @@
-import { Aggregate } from "./Aggregate";
-import { IDomainEvent } from "./DomainEvent";
-import { EventLog } from "./EventLog";
+import { Aggregate } from "./DDD/Aggregate";
+import { IDomainEvent } from "./DDD/DomainEvent";
+import { EventLog } from "./DDD/EventLog";
 import { ExampleCreated } from "./ExampleCreated";
 import { ExampleUpdated } from "./ExampleUpdated";
 

@@ -1,15 +1,15 @@
 import 'reflect-metadata'
 import { Handler } from 'aws-lambda';
-import { EventBridgeEvent, DomainEventPublisher } from './DomainEventPublisher';
+import { EventBridgeEvent, DomainEventPublisher } from './DDD/DomainEventPublisher';
 import { EventBridgeClient } from '@aws-sdk/client-eventbridge';
-import { SnapshotRepository } from './SnapshotRepository';
+import { SnapshotRepository } from './DDD/SnapshotRepository';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DomainEventBroadcaster } from './DomainEventBroadcaster';
+import { DomainEventBroadcaster } from './DDD/DomainEventBroadcaster';
 import { SNSClient } from '@aws-sdk/client-sns';
-import { DomainEvent } from './DomainEvent';
+import { DomainEvent } from './DDD/DomainEvent';
 import { ExampleCreated } from './ExampleCreated';
 import { CreateExample, Example } from './Example';
-import { EventLogRepository } from './EventLogRepository';
+import { EventLogRepository } from './DDD/EventLogRepository';
 import { ExampleRepository } from './ExampleRepository';
 
 /*global handler @preserve*/
