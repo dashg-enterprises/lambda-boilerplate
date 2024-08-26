@@ -2,7 +2,7 @@ variable "application_name" {
   type = string
 }
 
-variable "example_topic_arn" {
+variable "foreign_topic_arn" {
   type = string
 }
 

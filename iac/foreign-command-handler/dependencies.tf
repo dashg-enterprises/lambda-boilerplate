@@ -55,8 +55,9 @@ resource "aws_sns_topic" "event_log_broadcast" {
 }
 
 module "bounded_context_subscription" {
+  for_each = toset(var.foreign_topics)
   source = "./modules/bounded-context-subscription"
   application_name = var.application_name
-  example_topic_arn = var.example_topic_arn
+  foreign_topic_arn = each.key
   lambda_event_handler_arn = aws_lambda_function.lambda_bounded_context.arn
 }

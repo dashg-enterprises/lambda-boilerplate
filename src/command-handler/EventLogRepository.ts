@@ -1,5 +1,6 @@
 import { AttributeValue, DynamoDBClient, GetItemCommand, PutItemCommand, PutItemCommandInput, QueryCommand } from "@aws-sdk/client-dynamodb"; // ES Modules import
 import { DomainEvent } from "./DomainEvent";
+import { EventLog } from "./EventLog";
 
 export class EventLogRepository {
     tableName: string;
@@ -9,9 +10,9 @@ export class EventLogRepository {
         this.tableName = tableName;
     }   
 
-    async save(eventLog: DomainEvent[]) {
+    async save(eventLog: EventLog) {
         const input: PutItemCommandInput = {
-            "Item": this.toDynamoDbItem(eventLog[eventLog.length - 1]),
+            "Item": this.toDynamoDbItem(eventLog.mostRecent()),
             "ReturnConsumedCapacity": "TOTAL",
             "TableName": this.tableName
         };

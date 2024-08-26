@@ -9,6 +9,7 @@ import { DomainEvent } from './DomainEvent';
 import { ExampleCreated } from './ExampleCreated';
 import { CreateExample, Example } from './Example';
 import { EventLogRepository } from './EventLogRepository';
+import { ExampleRepository } from './ExampleRepository';
 
 /*global handler @preserve*/
 export const handler: Handler<EventBridgeEvent> = async (event, context) => {
@@ -20,11 +21,11 @@ export const handler: Handler<EventBridgeEvent> = async (event, context) => {
     const snapshotTableName = process.env.SNAPSHOT_TABLE_NAME;
     const eventLogTableName = process.env.EVENT_LOG_TABLE_NAME;
 
-    const exampleModel = new Example();
-    exampleModel.handle(inboundCommand);
-    const eventLog = exampleModel.getEventLog();
-    const snapshot = exampleModel.toSnapshot();
-    const domainEvent = eventLog[eventLog.length - 1];
+    const example = new Example();
+    example.handle(inboundCommand);
+    const eventLog = example.getEventLog();
+    const snapshot = example.toSnapshot();
+    const domainEvent = eventLog.mostRecent();
 
     const broadcaster = new DomainEventBroadcaster(eventTopicArn);
     await broadcaster.publish(domainEvent);
@@ -33,10 +34,9 @@ export const handler: Handler<EventBridgeEvent> = async (event, context) => {
     await publisher.publish(domainEvent, domainEvent.type);
 
     const eventLogRepository = new EventLogRepository(new DynamoDBClient(), eventLogTableName);
-    await eventLogRepository.save(exampleModel.getEventLog());
-
     const snapshotRepository = new SnapshotRepository(new DynamoDBClient(), snapshotTableName);
-    await snapshotRepository.save(exampleModel.toSnapshot());
+    const exampleRepository = new ExampleRepository(eventLogRepository, snapshotRepository);
+    exampleRepository.save(example);
 
     return {
         isBase64Encoded: false,

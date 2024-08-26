@@ -2,9 +2,10 @@ import { AttributeValue, DynamoDBClient, PutItemCommand, PutItemCommandInput } f
 import { DomainEvent } from "./DomainEvent";
 import { EventLogRepository } from "./EventLogRepository";
 import { SnapshotRepository } from "./SnapshotRepository";
-import { Aggregate, Example } from "./Example";
+import { Example } from "./Example";
+import { Aggregate } from "./Aggregate";
 
-export class AggregateRepository {
+export abstract class AggregateRepository {
     eventLogRepository: EventLogRepository;
     snapshotRepository: SnapshotRepository;
     constructor(eventLogRepository: EventLogRepository, snapshotRepository: SnapshotRepository) {

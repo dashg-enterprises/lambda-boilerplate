@@ -18,6 +18,6 @@ variable "build_id" {
   type = string
 }
 
-variable "example_topic_arn" {
-  type = string
+variable "foreign_topics" {
+  type = list(string)
 }

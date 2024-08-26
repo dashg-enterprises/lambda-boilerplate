@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "queue_policy_document" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = [var.example_topic_arn]
+      values   = [var.foreign_topic_arn]
     }
   }
 }
@@ -23,7 +23,7 @@ resource "aws_sqs_queue_policy" "queue_policy" {
 }
 
 resource "aws_sns_topic_subscription" "foreign_context_subscription" {
-  topic_arn = var.example_topic_arn
+  topic_arn = var.foreign_topic_arn
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.foreign_context_subscriber.arn
 }

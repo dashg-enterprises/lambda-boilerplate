@@ -1,22 +1,8 @@
-import { DomainEvent, IDomainEvent } from "./DomainEvent";
+import { Aggregate } from "./Aggregate";
+import { IDomainEvent } from "./DomainEvent";
+import { EventLog } from "./EventLog";
 import { ExampleCreated } from "./ExampleCreated";
 import { ExampleUpdated } from "./ExampleUpdated";
-
-export abstract class Aggregate {
-    protected id: string;
-    protected eventLog: DomainEvent[];
-    constructor(eventLog?: DomainEvent[]) {
-        this.id = Math.random().toString().substring(2);
-        this.eventLog = eventLog || [];
-    }
-    toSnapshot() {
-        const {eventLog, ...snapshot} = this;
-        return snapshot;
-    }
-    getEventLog() {
-        return [...this.eventLog];
-    }
-}
 
 export interface IDomainCommand {
     correlationId: string;
@@ -39,10 +25,10 @@ export class CreateExample extends DomainCommand {
 
 export class Example extends Aggregate {
     private name?: string;
-    constructor(eventLog?: ExampleCreated[]) {
+    constructor(eventLog?: EventLog) {
         if (eventLog) {
             super(eventLog);
-            eventLog.map(this.apply);
+            (eventLog.domainEvents as ExampleCreated[]).map(this.apply);
         } else {
             super();
         }
@@ -50,7 +36,7 @@ export class Example extends Aggregate {
     handle(createExample: CreateExample) {
         if (!createExample.name) throw new Error("Name is required for this example.");
 
-        const sequenceId = this.eventLog.length + 1;
+        const sequenceId = this.eventLog.nextSequenceId();
         const domainEvent = new ExampleCreated(sequenceId.toString(), createExample.correlationId, this.id, createExample.name);
         this.apply(domainEvent);
         return this;
@@ -59,7 +45,7 @@ export class Example extends Aggregate {
     apply(exampleCreated: ExampleCreated) {
         this.id = exampleCreated.aggregateId;
         this.name = exampleCreated.name;
-        this.eventLog.push(exampleCreated);
+        this.eventLog.append(exampleCreated);
         return this;
     }
 }

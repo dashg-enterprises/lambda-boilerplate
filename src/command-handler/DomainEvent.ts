@@ -10,6 +10,7 @@ export abstract class DomainEvent implements IDomainEvent {
     sequenceId: string;
     aggregateId: string;
     correlationId: string;
+    timestamp: Date = new Date();
     constructor(type: string, sequenceId: string, aggregateId: string, correlationId: string) {
         this.type = type;
         this.sequenceId = sequenceId;
