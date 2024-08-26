@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { Handler } from 'aws-lambda';
 import { EventBridgeEvent, DomainEventPublisher } from './DomainEventPublisher';
 import { EventBridgeClient } from '@aws-sdk/client-eventbridge';
