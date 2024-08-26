@@ -8,7 +8,7 @@ import { DomainEventBroadcaster } from './DDD/DomainEventBroadcaster';
 import { SNSClient } from '@aws-sdk/client-sns';
 import { DomainEvent } from './DDD/DomainEvent';
 import { ExampleCreated } from './events/ExampleCreated';
-import { Example } from './Example';
+import { Example } from './domain/Example';
 import { CreateExample } from "./commands/CreateExample";
 import { EventLogRepository } from './DDD/EventLogRepository';
 import { ExampleRepository } from './infrastructure/ExampleRepository';
