@@ -11,8 +11,8 @@ export class EventLog {
         this.domainEvents.push(domainEvent);
         return this;
     }
-    mostRecent() {
-        return this.domainEvents[this.domainEvents.length - 1];   
+    mostRecent<TCommand extends DomainEvent>() {
+        return this.domainEvents[this.domainEvents.length - 1] as TCommand;   
     }
     nextSequenceId() {
         return this.domainEvents.length + 1;

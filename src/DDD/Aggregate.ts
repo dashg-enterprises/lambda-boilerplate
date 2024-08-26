@@ -2,7 +2,6 @@ import { DomainEvent } from "./DomainEvent";
 import { v4 as uuidv4 } from 'uuid';
 import { EventLog } from "./EventLog";
 
-
 export abstract class Aggregate {
     protected id: string;
     protected eventLog: EventLog;

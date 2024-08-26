@@ -1,4 +1,4 @@
-import { DomainEvent } from "../DDD/DomainEvent";
+import { DomainEvent } from "../../DDD/DomainEvent";
 
 export class ExampleCreated extends DomainEvent {
     name: string;

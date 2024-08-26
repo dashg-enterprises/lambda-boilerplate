@@ -1,7 +1,7 @@
 import { CreateExample } from "../commands/CreateExample";
-import { Aggregate } from "../DDD/Aggregate";
-import { IDomainEvent } from "../DDD/DomainEvent";
-import { EventLog } from "../DDD/EventLog";
+import { Aggregate } from "../../DDD/Aggregate";
+import { IDomainEvent } from "../../DDD/DomainEvent";
+import { EventLog } from "../../DDD/EventLog";
 import { ExampleCreated } from "../events/ExampleCreated";
 import { ExampleUpdated } from "../events/ExampleUpdated";
 

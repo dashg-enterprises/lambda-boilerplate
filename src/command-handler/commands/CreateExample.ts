@@ -1,4 +1,4 @@
-import { DomainCommand } from "../DDD/DomainCommand";
+import { DomainCommand } from "../../DDD/DomainCommand";
 
 
 export class CreateExample extends DomainCommand {

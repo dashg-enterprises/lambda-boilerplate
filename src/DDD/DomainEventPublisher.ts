@@ -1,4 +1,5 @@
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
+import { DomainEvent } from "./DomainEvent";
 
 export class DomainEventPublisher {
   aggregateName: string;
@@ -10,8 +11,7 @@ export class DomainEventPublisher {
     this.busName = busName;
   }
   async publish(
-    event: object,
-    eventType: string,
+    domainEvent: DomainEvent,
     source = this.aggregateName,
     busName = this.busName,
     resources = []) {
@@ -21,8 +21,8 @@ export class DomainEventPublisher {
       new PutEventsCommand({
         Entries: [
           {
-            Detail: JSON.stringify(event),
-            DetailType: eventType,
+            Detail: JSON.stringify(domainEvent),
+            DetailType: domainEvent.type,
             Resources: resources,
             EventBusName: busName,
             Source: source,
