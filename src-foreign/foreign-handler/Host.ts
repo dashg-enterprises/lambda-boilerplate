@@ -18,12 +18,31 @@ export class Host {
 
         const broadcaster = new DomainEventBroadcaster(eventTopicArn);
         const publisher = new DomainEventPublisher(new EventBridgeClient(), "Demonstration", eventBusName);
-        const docDbClient = DynamoDBDocumentClient.from(new DynamoDBClient());
+        const docDbClient = DynamoDBDocumentClient.from(new DynamoDBClient(), this.getDynamoConfig());
         const eventLogRepository = new EventLogRepository(docDbClient, eventLogTableName);
         const snapshotRepository = new SnapshotRepository(docDbClient, snapshotTableName);
         const demonstrationRepository = new DemonstrationRepository(eventLogRepository, snapshotRepository);
         const demonstrationService = new DemonstrationService(demonstrationRepository, broadcaster, publisher);
 
         return demonstrationService as T;
+    }
+
+    private getDynamoConfig = () => {
+        const marshallOptions = {
+            // Whether to automatically convert empty strings, blobs, and sets to `null`.
+            // convertEmptyValues: false, // false, by default.
+            // Whether to remove undefined values while marshalling.
+            removeUndefinedValues: true, // false, by default.
+            // Whether to convert typeof object to map attribute.
+            convertClassInstanceToMap: true // false, by default. <---- Set this flag
+          }
+          
+          const unmarshallOptions = {
+            // Whether to return numbers as a string instead of converting them to native JavaScript numbers.
+            // wrapNumbers: false, // false, by default.
+          }
+          
+          const translateConfig = { marshallOptions, unmarshallOptions };
+          return translateConfig;
     }
 }
