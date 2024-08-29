@@ -1,54 +1,59 @@
-name: CI Build Step - Deploy Zip to S3
+name: CD Step - Deploy to AWS
 
 on: 
   workflow_dispatch:
     inputs:
-      lambda:
-        description: "The lambda to build"
+      environment:
+        description: "The environment to deploy"
         required: true
-        default: "command-handler"
+        default: "dev"
         type: choice
         options:
-          - command-handler
-          - foreign-handler
-          - view-materializer
-          
+          - dev
+          - uat
+          - prod
+      command:
+        description: "The command to run"
+        required: false
+        default: "apply"
+        type: choice
+        options:
+          - apply
+          - destroy
+  # pull_request:
+  #   branches: 
+  #     - main
+  #   types: [closed]
+
+concurrency: one-deploy-at-a-time
+
 env:
   AWS_REGION: us-east-1              
   S3_REPOSITORY: lambdaboilerplate-builds
   TF_VERSION: '1.9.3'
   TG_VERSION: '0.63.6'
-  TG_DIR: 'deploy/live/aws/_initializations/lambda-boilerplate'
+  TG_DIR: 'live/aws/${{ inputs.environment }}/bounded-context/applications/lambda-boilerplate'
+  TG_LOCAL_PATH: 'deploy'
 
 jobs:
   deploy:
-    name: Build zip to S3
+    # if: ${{ github.event.pull_request.merged }}
+    name: Deploy
     runs-on: ubuntu-latest
     environment: dev
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-      - run: npm ci
-      - if: inputs.lambda != 'foreign-handler'
-        run: npm run build -- src/${{ inputs.lambda }}/index.ts
-      - if: inputs.lambda == 'foreign-handler'
-        run: npm run build -- src-foreign/${{ inputs.lambda }}/index.ts
-      - run: npm run postbuild
       - name: Checkout cloud-deployment
         uses: actions/checkout@v4
         with:
           ref: 'feature/aws-lambda-boilerplate-deployment'
           repository: dashg-enterprises/cloud-deployment
           token: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
-          path: deploy
+          path: ${{ env.TG_LOCAL_PATH }}
           sparse-checkout: |
-            live/aws/_initializations/lambda-boilerplate
-      
+            ${{ TG_DIR }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
         with:
@@ -56,9 +61,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # - run: ls -R
-
-      - name: Ensure Bounded Context is initialized
+      - name: Deploy to AWS
         uses: gruntwork-io/terragrunt-action@v2
         env:
           INPUT_PRE_EXEC_1: |
@@ -68,9 +71,5 @@ jobs:
         with:
           TF_VERSION: ${{ env.TF_VERSION }}
           TG_VERSION: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
-          tg_command: 'apply --terragrunt-source ../../../../..//iac/initialization'
-      - name: Deploy build to bucket
-        run: aws s3 cp out/index.zip s3://${{ env.S3_REPOSITORY }}/${{ github.ref_name }}-${{ inputs.lambda }}-${{ github.sha }}.zip
-      - name: "Print build id"
-        run: echo "### BUILD ID - ${{ github.ref_name }}-${{ inputs.lambda }}-${{ github.sha }}.zip" >> $GITHUB_STEP_SUMMARY
+          tg_dir: '${{ env.TG_LOCAL_PATH }}/${{ env.TG_DIR }}'
+          tg_command: '${{ inputs.command }} --terragrunt-source ../../../../../../..//iac'

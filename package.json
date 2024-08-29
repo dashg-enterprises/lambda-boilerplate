@@ -4,8 +4,29 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prebuild": "rm -rf out",
+    "build-dev": "esbuild --sourcemap --platform=node --target=es2020 --outfile=out/index.js",
+    "build": "esbuild --bundle --minify --platform=node --target=es2020 --outfile=out/index.js",
+    "postbuild": "cd out && zip index.zip index.js",
+    "postbuild-windows": "cd out && tar -a -cf index.zip index.js*"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.143",
+    "@types/node": "^22.5.0",
+    "@types/uuid": "^10.0.0",
+    "esbuild": "^0.23.1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.637.0",
+    "@aws-sdk/client-eventbridge": "^3.633.0",
+    "@aws-sdk/client-sns": "^3.637.0",
+    "@aws-sdk/lib-dynamodb": "^3.637.0",
+    "@typedorm/common": "^1.15.4",
+    "@typedorm/core": "^1.15.4",
+    "aws-lambda": "^1.0.7",
+    "reflect-metadata": "^0.1.14",
+    "uuid": "^10.0.0"
+  }
 }
