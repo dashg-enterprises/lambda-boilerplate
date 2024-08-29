@@ -1,3 +1,14 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.59.0"
+    }
+  }
+
+  required_version = ">= 1.2.0"
+}
+
 module "example_command_handler" {
   source = "git::https://github.com/dashg-enterprises/cloud-platform.git//modules/bounded-context/aws/serverless/lambda?ref=main"
   bounded_context_name = "LambdaBoilerplate"
