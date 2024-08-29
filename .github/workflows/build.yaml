@@ -42,7 +42,6 @@ jobs:
       - name: Checkout cloud-deployment
         uses: actions/checkout@v4
         with:
-          ref: 'feature/aws-lambda-boilerplate-deployment'
           repository: dashg-enterprises/cloud-deployment
           token: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
           path: deploy

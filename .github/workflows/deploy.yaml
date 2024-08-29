@@ -32,7 +32,7 @@ env:
   S3_REPOSITORY: lambdaboilerplate-builds
   TF_VERSION: '1.9.3'
   TG_VERSION: '0.63.6'
-  TG_DIR: 'live/aws/${{ inputs.environment }}/bounded-context/applications/lambda-boilerplate'
+  TG_DIR: 'live/aws/${{ inputs.environment }}/applications/lambda-boilerplate'
   TG_LOCAL_PATH: 'deploy'
 
 jobs:
@@ -48,12 +48,11 @@ jobs:
       - name: Checkout cloud-deployment
         uses: actions/checkout@v4
         with:
-          ref: 'feature/aws-lambda-boilerplate-deployment'
           repository: dashg-enterprises/cloud-deployment
           token: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
           path: ${{ env.TG_LOCAL_PATH }}
           sparse-checkout: |
-            ${{ TG_DIR }}
+            ${{ env.TG_DIR }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
         with:
@@ -72,4 +71,4 @@ jobs:
           TF_VERSION: ${{ env.TF_VERSION }}
           TG_VERSION: ${{ env.TG_VERSION }}
           tg_dir: '${{ env.TG_LOCAL_PATH }}/${{ env.TG_DIR }}'
-          tg_command: '${{ inputs.command }} --terragrunt-source ../../../../../../..//iac'
+          tg_command: '${{ inputs.command }} --terragrunt-source ../../../../../..//iac/command-handler'
