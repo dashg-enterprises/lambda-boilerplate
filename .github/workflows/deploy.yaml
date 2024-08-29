@@ -32,7 +32,7 @@ env:
   S3_REPOSITORY: lambdaboilerplate-builds
   TF_VERSION: '1.9.3'
   TG_VERSION: '0.63.6'
-  TG_DIR: 'live/aws/${{ inputs.environment }}/bounded-context/applications/lambda-boilerplate'
+  TG_DIR: 'live/aws/${{ inputs.environment }}/applications/lambda-boilerplate'
   TG_LOCAL_PATH: 'deploy'
 
 jobs:
