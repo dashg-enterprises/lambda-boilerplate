@@ -1,5 +1,5 @@
 module "example_command_handler" {
-  source = "git::https://github.com/dashg-enterprises/cloud-platform.git//modules/bounded-context/aws/serverless/lambda?ref=feature/aws-lambda-boilerplate-deployment"
+  source = "git::https://github.com/dashg-enterprises/cloud-platform.git//modules/bounded-context/aws/serverless/lambda?ref=main"
   bounded_context_name = "LambdaBoilerplate"
   aggregate_root_name = "Example"
   application_name = "example-command-handler-local"
