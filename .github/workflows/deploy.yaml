@@ -71,4 +71,4 @@ jobs:
           TF_VERSION: ${{ env.TF_VERSION }}
           TG_VERSION: ${{ env.TG_VERSION }}
           tg_dir: '${{ env.TG_LOCAL_PATH }}/${{ env.TG_DIR }}'
-          tg_command: '${{ inputs.command }} --terragrunt-source ../../../../../..//iac'
+          tg_command: '${{ inputs.command }} --terragrunt-source ../../../../../..//iac/command-handler'
