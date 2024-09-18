@@ -9,7 +9,7 @@ terraform {
   required_version = ">= 1.2.0"
 }
 
-module "example_lambda_context" {
+module "demonstration_lambda_context" {
   source = "git::https://github.com/dashg-enterprises/cloud-platform.git//modules/bounded-context/aws/serverless/context?ref=main"
   bounded_context_name = "DemonstrationContext"
   aggregate_root_name = "Demonstration"
