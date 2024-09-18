@@ -10,7 +10,7 @@ terraform {
 }
 
 module "demonstration_lambda_context" {
-  source = "git::https://github.com/dashg-enterprises/cloud-platform.git//modules/bounded-context/aws/serverless/context?ref=fix/lambda-context-cycle"
+  source = "git::https://github.com/dashg-enterprises/cloud-platform.git//modules/bounded-context/aws/serverless/context?ref=main"
   bounded_context_name = "DemonstrationContext"
   aggregate_root_name = "Demonstration"
   application_name = "demonstration-handlers-${var.environment_name}"
