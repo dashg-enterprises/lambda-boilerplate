@@ -1,4 +1,4 @@
-name: CD Step - Deploy to AWS
+name: CD Step - Deploy foreign context to AWS
 
 on: 
   workflow_dispatch:
