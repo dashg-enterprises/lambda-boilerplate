@@ -14,7 +14,7 @@ on:
           
 env:
   AWS_REGION: us-east-1              
-  S3_REPOSITORY: lambdaboilerplate-builds
+  S3_REPOSITORY: examplecontext-builds
   TF_VERSION: '1.9.3'
   TG_VERSION: '0.63.6'
   TG_DIR: 'live/aws/_initializations/lambda-boilerplate'
