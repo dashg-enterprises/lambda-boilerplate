@@ -1,4 +1,4 @@
-name: CD Step - Deploy to AWS
+name: CD Step - Deploy foreign context to AWS
 
 on: 
   workflow_dispatch:
@@ -32,7 +32,7 @@ env:
   S3_REPOSITORY: lambdaboilerplate-builds
   TF_VERSION: '1.9.3'
   TG_VERSION: '0.63.6'
-  TG_DIR: 'live/aws/${{ inputs.environment }}/applications/lambda-boilerplate'
+  TG_DIR: 'live/aws/${{ inputs.environment }}/applications/lambda-foreign-boilerplate'
   TG_LOCAL_PATH: 'deploy'
 
 jobs:
@@ -51,8 +51,6 @@ jobs:
           repository: dashg-enterprises/cloud-deployment
           token: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
           path: ${{ env.TG_LOCAL_PATH }}
-          # sparse-checkout: |
-          #   ${{ env.TG_DIR }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
         with:
@@ -71,4 +69,4 @@ jobs:
           TF_VERSION: ${{ env.TF_VERSION }}
           TG_VERSION: ${{ env.TG_VERSION }}
           tg_dir: '${{ env.TG_LOCAL_PATH }}/${{ env.TG_DIR }}'
-          tg_command: '${{ inputs.command }} --terragrunt-source ../../../../../..//iac'
+          tg_command: '${{ inputs.command }} --terragrunt-source ../../../../../..//iac/foreign-context'
