@@ -10,15 +10,16 @@ on:
         type: choice
         options:
           - command-handler
-          - foreign-handler
           - view-materializer
           
 env:
   AWS_REGION: us-east-1              
-  S3_REPOSITORY: lambdaboilerplate-builds
+  S3_REPOSITORY: examplecontext-builds
   TF_VERSION: '1.9.3'
   TG_VERSION: '0.63.6'
-  TG_DIR: 'deploy/live/aws/_initializations/lambda-boilerplate'
+  TG_DIR: 'live/aws/_initializations/lambda-boilerplate'
+  TG_LOCAL_PATH: 'deploy'
+  BUILD_ID: ${{ github.ref_name }}__${{ inputs.lambda }}__${{ github.sha }}.zip
 
 jobs:
   deploy:
@@ -34,19 +35,16 @@ jobs:
         with:
           node-version: '20.x'
       - run: npm ci
-      - if: inputs.lambda != 'foreign-handler'
-        run: npm run build -- src/${{ inputs.lambda }}/index.ts
-      - if: inputs.lambda == 'foreign-handler'
-        run: npm run build -- src-foreign/${{ inputs.lambda }}/index.ts
+      - run: npm run build -- src/${{ inputs.lambda }}/index.ts
       - run: npm run postbuild
       - name: Checkout cloud-deployment
         uses: actions/checkout@v4
         with:
           repository: dashg-enterprises/cloud-deployment
           token: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
-          path: deploy
+          path: ${{ env.TG_LOCAL_PATH }}
           sparse-checkout: |
-            live/aws/_initializations/lambda-boilerplate
+            ${{ env.TG_DIR }}
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
@@ -67,9 +65,18 @@ jobs:
         with:
           TF_VERSION: ${{ env.TF_VERSION }}
           TG_VERSION: ${{ env.TG_VERSION }}
-          tg_dir: ${{ env.TG_DIR }}
+          tg_dir: ${{ env.TG_LOCAL_PATH }}/${{ env.TG_DIR }}
           tg_command: 'apply --terragrunt-source ../../../../..//iac/initialization'
+      
+      - uses: mad9000/actions-find-and-replace-string@2
+        id: sanitized-build-id
+        with:
+          source: ${{ env.BUILD_ID }}
+          find: '/'        
+          replace: '_'
+
       - name: Deploy build to bucket
-        run: aws s3 cp out/index.zip s3://${{ env.S3_REPOSITORY }}/${{ github.ref_name }}-${{ inputs.lambda }}-${{ github.sha }}.zip
+        run: aws s3 cp out/index.zip s3://${{ env.S3_REPOSITORY }}/${{ steps.sanitized-build-id.outputs.value }}
+      
       - name: "Print build id"
-        run: echo "### BUILD ID - ${{ github.ref_name }}-${{ inputs.lambda }}-${{ github.sha }}.zip" >> $GITHUB_STEP_SUMMARY
+        run: echo "### BUILD ID - ${{ steps.sanitized-build-id.outputs.value }}" >> $GITHUB_STEP_SUMMARY
