@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: '20.x'
       - run: npm ci
-        run: npm run build -- src/${{ inputs.lambda }}/index.ts
+      - run: npm run build -- src/${{ inputs.lambda }}/index.ts
       - run: npm run postbuild
       - name: Checkout cloud-deployment
         uses: actions/checkout@v4
