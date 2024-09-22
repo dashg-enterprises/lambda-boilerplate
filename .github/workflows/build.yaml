@@ -17,7 +17,7 @@ env:
   S3_REPOSITORY: lambdaboilerplate-builds
   TF_VERSION: '1.9.3'
   TG_VERSION: '0.63.6'
-  TG_DIR: 'deploy/live/aws/_initializations/lambda-boilerplate'
+  TG_DIR: 'live/aws/_initializations/lambda-boilerplate'
   TG_LOCAL_PATH: 'deploy'
   BUILD_ID: ${{ github.ref_name }}__${{ inputs.lambda }}__${{ github.sha }}.zip
 
