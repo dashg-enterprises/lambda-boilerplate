@@ -51,8 +51,8 @@ jobs:
           repository: dashg-enterprises/cloud-deployment
           token: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
           path: ${{ env.TG_LOCAL_PATH }}
-          # sparse-checkout: |
-          #   ${{ env.TG_DIR }}
+          sparse-checkout: |
+            ${{ env.TG_DIR }}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
         with:
@@ -64,8 +64,10 @@ jobs:
         uses: gruntwork-io/terragrunt-action@v2
         env:
           INPUT_PRE_EXEC_1: |
-            git config --global url."https://user:${{secrets.CLOUD_DEPLOYMENT_PAT}}@github.com".insteadOf "https://github.com"
+            git config --global url."https://user:${{secrets.DASHG_CLOUD_PLATFORM_PAT}}@github.com/dashg-enterprises".insteadOf "https://github.com/dashg-enterprises"
           INPUT_PRE_EXEC_2: |
+            git config --global url."https://user:${{secrets.CLOUD_DEPLOYMENT_PAT}}@github.com".insteadOf "https://github.com"
+          INPUT_PRE_EXEC_3: |
             git config --global --list
         with:
           TF_VERSION: ${{ env.TF_VERSION }}

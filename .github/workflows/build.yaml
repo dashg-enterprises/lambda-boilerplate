@@ -11,6 +11,14 @@ on:
         options:
           - command-handler
           - view-materializer
+      command:
+        description: "The command to run"
+        required: true
+        default: "apply"
+        type: choice
+        options:
+          - apply
+          - destroy
           
 env:
   AWS_REGION: us-east-1              
@@ -59,16 +67,19 @@ jobs:
         uses: gruntwork-io/terragrunt-action@v2
         env:
           INPUT_PRE_EXEC_1: |
-            git config --global url."https://user:${{secrets.CLOUD_DEPLOYMENT_PAT}}@github.com".insteadOf "https://github.com"
+            git config --global url."https://user:${{secrets.DASHG_CLOUD_PLATFORM_PAT}}@github.com/dashg-enterprises".insteadOf "https://github.com/dashg-enterprises"
           INPUT_PRE_EXEC_2: |
+            git config --global url."https://user:${{secrets.CLOUD_DEPLOYMENT_PAT}}@github.com".insteadOf "https://github.com"
+          INPUT_PRE_EXEC_3: |
             git config --global --list
         with:
           TF_VERSION: ${{ env.TF_VERSION }}
           TG_VERSION: ${{ env.TG_VERSION }}
           tg_dir: ${{ env.TG_LOCAL_PATH }}/${{ env.TG_DIR }}
-          tg_command: 'apply --terragrunt-source ../../../../..//iac/initialization'
+          tg_command: '${{ inputs.command }} --terragrunt-source ../../../../..//iac/initialization'
       
       - uses: mad9000/actions-find-and-replace-string@2
+        if: ${{ inputs.command == 'apply' }}
         id: sanitized-build-id
         with:
           source: ${{ env.BUILD_ID }}
@@ -76,7 +87,9 @@ jobs:
           replace: '_'
 
       - name: Deploy build to bucket
+        if: ${{ inputs.command == 'apply' }}
         run: aws s3 cp out/index.zip s3://${{ env.S3_REPOSITORY }}/${{ steps.sanitized-build-id.outputs.value }}
       
       - name: "Print build id"
+        if: ${{ inputs.command == 'apply' }}
         run: echo "### BUILD ID - ${{ steps.sanitized-build-id.outputs.value }}" >> $GITHUB_STEP_SUMMARY
