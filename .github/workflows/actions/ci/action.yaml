@@ -84,7 +84,7 @@ runs:
         declare -A lambdas=${{ inputs.LAMBDAS }}
         declare -A lambda_builds_map=()
         npm ci
-        for lambda in "${!lambdas[@]}"; do
+        for lambda in "${lambdas[@]}"; do
             npm run build -- "src/$lambda/index.ts"
             npm run postbuild
             declare baseBuildId="${{ github.ref_name }}__${lambda}__${{ github.sha }}.zip"
