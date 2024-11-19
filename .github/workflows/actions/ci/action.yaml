@@ -92,7 +92,7 @@ runs:
 
         npm ci
         for lambda in "${!lambdas[@]}"; do
-            npm run build -- "src/${$lambda}/index.ts"
+            npm run build -- "src/$lambda/index.ts"
             npm run postbuild
 
             declare buildId="${echo ${{ github.ref_name }}__${ $lambda }__${{ github.sha }}.zip | tr '/' '_'}"
