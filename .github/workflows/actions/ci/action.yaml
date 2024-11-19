@@ -85,6 +85,7 @@ runs:
         declare -A lambda_builds_map=()
         npm ci
         for lambda in "${lambdas[@]}"; do
+            echo $lambda_builds_map
             npm run build -- "src/$lambda/index.ts"
             npm run postbuild
             declare baseBuildId="${{ github.ref_name }}__${lambda}__${{ github.sha }}.zip"
@@ -95,5 +96,5 @@ runs:
             aws s3 cp out/index.zip s3://${{ inputs.S3_REPOSITORY }}/$buildId
             rm -r out
             lambda_builds_map+=( [$lambda]=$buildId )
-            echo "lambda_builds_map=$lambda_builds_map" >> $GITHUB_OUTPUT
         done
+        echo "lambda_builds_map=$lambda_builds_map" >> $GITHUB_OUTPUT
