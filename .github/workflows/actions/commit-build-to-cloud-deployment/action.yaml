@@ -40,19 +40,11 @@ runs:
       shell: bash
       run: |
         cd '${{ inputs.TG_LOCAL_PATH }}/${{ inputs.TG_APP_DIR }}'
-
-        declare -A builds
-        builds=${{ inputs.LAMBDA_BUILDS_MAP }}
-        # builds=(
-        #     ["example-command-handler"]="build-1"
-        #     ["example-view-materializer"]="build-2"
-        # )
-
+        declare -A builds=${{ inputs.LAMBDA_BUILDS_MAP }}
         for key in "${!builds[@]}"; do
             echo "Key: $key, Value: ${builds[$key]}"
-            hcledit attribute --update --file terragrunt.hcl set 'locals.${$key}' '"${builds[$key]}"'
+            hcledit attribute --update --file terragrunt.hcl set 'locals.$key' '"${builds[$key]}"'
         done
-
         cat terragrunt.hcl
 
     - name: Create Pull Request to cloud-deployment
