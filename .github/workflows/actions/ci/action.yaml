@@ -87,8 +87,10 @@ runs:
         for lambda in "${!lambdas[@]}"; do
             npm run build -- "src/$lambda/index.ts"
             npm run postbuild
-
-            declare buildId=$(echo "${{ github.ref_name }}__$lambda__${{ github.sha }}.zip" | tr '/' '_')
+            declare baseBuildId="${{ github.ref_name }}__${lambda}__${{ github.sha }}.zip"
+            echo $baseBuildId
+            echo $baseBuildId | tr '/' '_'
+            declare buildId=$(echo $baseBuildId | tr '/' '_')
             echo $buildId
             aws s3 cp out/index.zip s3://${{ inputs.S3_REPOSITORY }}/$buildId
             rm -r out
