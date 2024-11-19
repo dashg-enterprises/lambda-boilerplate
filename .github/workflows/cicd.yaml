@@ -48,6 +48,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ env.AWS_REGION }}
+          LAMBDAS: ${{ env.LAMBDAS }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
           S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
           TG_SOURCE: ${{ env.TG_INIT_SOURCE }}
