@@ -1,0 +1,127 @@
+name: CI CD Workflow - Build Image and Deploy to Environments
+
+on: 
+  workflow_dispatch:
+    inputs:
+      dev:
+        description: "Should deploy to dev"
+        required: true
+        default: true
+        type: boolean
+      uat:
+        description: "Should deploy to uat"
+        required: true
+        default: true
+        type: boolean
+      prod:
+        description: "Should deploy to prod"
+        required: true
+        default: true
+        type: boolean
+
+env:
+  AWS_REGION: us-east-1              
+  S3_REPOSITORY: examplecontext-builds
+  GIT_ORGANIZATION_NAME: dashg-enterprises
+  LAMBDAS: ( "command-handler" "view-materializer" )
+  TG_INIT_DIR: 'live/aws/_initializations/lambda-boilerplate'
+  TG_DEV_APP_DIR: 'live/aws/dev/applications/lambda-boilerplate'
+  TG_UAT_APP_DIR: 'live/aws/uat/applications/lambda-boilerplate'
+  TG_PROD_APP_DIR: 'live/aws/prod/applications/lambda-boilerplate'
+  TG_INIT_SOURCE: '../../../../..//iac/initialization'
+  TG_APP_SOURCE: '../../../../../..//iac'
+
+jobs:
+  build:
+    name: Build Application Image
+    runs-on: ubuntu-latest
+    outputs:
+      lambda_builds_map: ${{ steps.ci.outputs.lambda_builds_map }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/actions/ci
+        name: Run CI Action
+        id: ci
+        with: 
+          CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          DASHG_CLOUD_PLATFORM_PAT: ${{ secrets.DASHG_CLOUD_PLATFORM_PAT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
+          S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
+          TG_SOURCE: ${{ env.TG_INIT_SOURCE }}
+          TG_DIR: ${{ env.TG_INIT_DIR }}
+      
+  deploy-dev:
+    if: ${{ inputs.dev }}
+    needs: build
+    name: Deploy to Dev
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/actions/commit-build-to-cloud-deployment
+        with: 
+          CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          TG_APP_DIR: ${{ env.TG_DEV_APP_DIR }}
+          GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
+          LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
+      - uses: ./.github/workflows/actions/cd
+        with: 
+          CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          DASHG_CLOUD_PLATFORM_PAT: ${{ secrets.DASHG_CLOUD_PLATFORM_PAT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
+          TG_SOURCE: ${{ env.TG_APP_SOURCE }}
+          TG_DIR: ${{ env.TG_DEV_APP_DIR }}
+  deploy-uat:
+    if: ${{ inputs.uat }}
+    needs: [build, deploy-dev]
+    name: Deploy to UAT
+    runs-on: ubuntu-latest
+    environment: uat
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/actions/commit-build-to-cloud-deployment
+        with: 
+          CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          TG_APP_DIR: ${{ env.TG_UAT_APP_DIR }}
+          GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
+          LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
+      - uses: ./.github/workflows/actions/cd
+        with: 
+          CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          DASHG_CLOUD_PLATFORM_PAT: ${{ secrets.DASHG_CLOUD_PLATFORM_PAT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
+          TG_SOURCE: ${{ env.TG_APP_SOURCE }}
+          TG_DIR: ${{ env.TG_UAT_APP_DIR }}
+  deploy-prod:
+    if: ${{ inputs.prod }}
+    needs: [build, deploy-dev, deploy-uat]
+    name: Deploy to Prod
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/workflows/actions/commit-build-to-cloud-deployment
+        with: 
+          CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          TG_APP_DIR: ${{ env.TG_PROD_APP_DIR }}
+          GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
+          LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
+      - uses: ./.github/workflows/actions/cd
+        with: 
+          CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          DASHG_CLOUD_PLATFORM_PAT: ${{ secrets.DASHG_CLOUD_PLATFORM_PAT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
+          TG_SOURCE: ${{ env.TG_APP_SOURCE }}
+          TG_DIR: ${{ env.TG_PROD_APP_DIR }}

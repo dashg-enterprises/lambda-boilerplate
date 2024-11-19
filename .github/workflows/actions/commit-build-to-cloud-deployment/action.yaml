@@ -1,0 +1,78 @@
+name: CI
+description: Project build action
+inputs:
+  CLOUD_DEPLOYMENT_PAT:
+    description: 'PAT to checkout cloud-deployment'
+  TG_APP_DIR:
+    description: 'Path to the cloud-deployment application image to change'
+  GIT_ORGANIZATION_NAME:
+    description: 'Name of the organization to checkout cloud-deployment'
+  LAMBDA_BUILDS_MAP:
+    description: A bash array of build ids for each lambda
+    default: '(["example-command-handler"]="build-1" ["example-view-materializer"]="build-2")'
+  TG_LOCAL_PATH:
+    description: 'Where cloud-deployment will be placed in the workflow agent'
+    default: 'deploy'
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout cloud-deployment
+      uses: actions/checkout@v4
+      with:
+        repository: "${{ inputs.GIT_ORGANIZATION_NAME }}/cloud-deployment"
+        token: ${{ inputs.CLOUD_DEPLOYMENT_PAT }}
+        path: ${{ inputs.TG_LOCAL_PATH }}
+
+    - uses: actions/setup-go@v5
+      with:
+        go-version: '^1.13.1' # The Go version to download (if necessary) and use.
+
+    - name: Get hcledit
+      shell: bash
+      run: |
+        git clone https://github.com/minamijoyo/hcledit
+        cd hcledit/
+        make install
+        hcledit version
+        cd ../
+
+    - name: Alter application image in cloud-deployment 
+      shell: bash
+      run: |
+        cd '${{ inputs.TG_LOCAL_PATH }}/${{ inputs.TG_APP_DIR }}'
+
+        declare -A builds
+        builds=${{ inputs.LAMBDA_BUILDS_MAP }}
+        # builds=(
+        #     ["example-command-handler"]="build-1"
+        #     ["example-view-materializer"]="build-2"
+        # )
+
+        for key in "${!builds[@]}"; do
+            echo "Key: $key, Value: ${builds[$key]}"
+            hcledit attribute --update --file terragrunt.hcl set 'locals.${$key}' '"${builds[$key]}"'
+        done
+
+        cat terragrunt.hcl
+
+    - name: Create Pull Request to cloud-deployment
+      id: cpr
+      uses: peter-evans/create-pull-request@v7
+      with:
+        branch: "build/${{ env.ECR_REPOSITORY }}-${{ github.sha }}"
+        commit-message: "Update build for ${{ github.sha }}"
+        token: ${{ inputs.CLOUD_DEPLOYMENT_PAT }}
+        path: ${{ inputs.TG_LOCAL_PATH }}
+  
+    - name: Output PR details
+      shell: bash
+      if: ${{ steps.cpr.outputs.pull-request-number }}
+      run: |
+        echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+        echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+
+    - name: Merge PR to cloud-deployment
+      shell: bash
+      run: gh pr merge --merge --admin "${{ steps.cpr.outputs.pull-request-number }}" --repo "${{ inputs.GIT_ORGANIZATION_NAME }}/cloud-deployment"
+      env:
+        GH_TOKEN: ${{ inputs.CLOUD_DEPLOYMENT_PAT }}
