@@ -81,17 +81,17 @@ runs:
       id: build-step
       shell: bash
       run: |
-        lambdas=${{ inputs.LAMBDAS }}
-        lambda_builds_map=()
-        npm ci
+        declare -A lambdas=${{ inputs.LAMBDAS }};
+        declare -A lambda_builds_map;
+        npm ci;
         for lambda in "${lambdas[@]}"; do
-            npm run build -- "src/$lambda/index.ts"
-            baseBuildId="${{ github.ref_name }}__${lambda}__${{ github.sha }}.zip"  
-            buildId=$(echo $baseBuildId | tr '/' '_')
-            aws s3 cp out/index.zip s3://${{ inputs.S3_REPOSITORY }}/$buildId
-            lambda_builds_map[$lambda]=$buildId
-            echo $buildId
-        done
-        echo "lambda_builds_map[@] - ${lambda_builds_map[@]}"
-        echo "!lambda_builds_map[@] - ${!lambda_builds_map[@]}"
-        echo "lambda_builds_map=$lambda_builds_map" >> $GITHUB_OUTPUT
+            npm run build -- "src/$lambda/index.ts";
+            baseBuildId="${{ github.ref_name }}__${lambda}__${{ github.sha }}.zip";
+            buildId=$(echo $baseBuildId | tr '/' '_');
+            aws s3 cp out/index.zip s3://${{ inputs.S3_REPOSITORY }}/$buildId;
+            lambda_builds_map[$lambda]=$buildId;
+            echo $buildId;
+        done;
+        echo "lambda_builds_map[@] - ${lambda_builds_map[@]}";
+        echo "!lambda_builds_map[@] - ${!lambda_builds_map[@]}";
+        echo "lambda_builds_map=$lambda_builds_map" >> $GITHUB_OUTPUT;
