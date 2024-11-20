@@ -94,7 +94,6 @@ runs:
             declare buildId=$(echo $baseBuildId | tr '/' '_')
             echo $buildId
             aws s3 cp out/index.zip s3://${{ inputs.S3_REPOSITORY }}/$buildId
-            rm -r out
             lambda_builds_map+=( [$lambda]=$buildId )
         done
         echo "lambda_builds_map=$lambda_builds_map" >> $GITHUB_OUTPUT
