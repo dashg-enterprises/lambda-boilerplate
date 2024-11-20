@@ -81,12 +81,12 @@ runs:
       id: loop
       shell: bash
       run: |
-        for x in ("a" "b" "c"); do
-            echo $x
-        done
         declare -A vals=( "x" "y" "z")
         for val in "${vals[@]}"; do
             echo $val
+        done
+        for x in "${("a" "b" "c")}"; do
+            echo $x
         done
         declare -A lambdas=${{ inputs.LAMBDAS }}
         for lambda in "${lambdas[@]}"; do
