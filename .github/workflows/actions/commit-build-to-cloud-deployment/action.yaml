@@ -46,7 +46,7 @@ runs:
             echo "Key: $key, Value: ${lambda_builds_map[$key]}";
             buildKey=$(echo $key | tr '-' '_');
             echo $buildKey;
-            hcledit attribute --update --file terragrunt.hcl set "locals.${buildKey}_build_id" '"${lambda_builds_map[$key]}"'
+            hcledit attribute --update --file terragrunt.hcl set locals.${buildKey}_build_id ${lambda_builds_map[$key]}
         done
         cat terragrunt.hcl
 
