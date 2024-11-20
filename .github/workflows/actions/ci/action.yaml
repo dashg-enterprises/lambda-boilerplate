@@ -81,7 +81,7 @@ runs:
       id: build-step
       shell: bash
       run: |
-        declare -A lambdas=${{ inputs.LAMBDAS }};
+        declare -a lambdas=${{ inputs.LAMBDAS }};
         declare -A lambda_builds_map;
         npm ci;
         for lambda in "${lambdas[@]}"; do
