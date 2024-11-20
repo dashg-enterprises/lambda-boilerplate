@@ -85,7 +85,7 @@ runs:
         for val in "${vals[@]}"; do
             echo $val
         done
-        for x in "${("a" "b" "c")}"; do
+        for x in "${("a" "b" "c")[@]}"; do
             echo $x
         done
         declare -A lambdas=${{ inputs.LAMBDAS }}
