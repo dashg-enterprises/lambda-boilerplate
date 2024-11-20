@@ -9,7 +9,6 @@ inputs:
     description: 'Name of the organization to checkout cloud-deployment'
   LAMBDA_BUILDS_MAP:
     description: A bash array of build ids for each lambda
-    default: '(["example-command-handler"]="build-1" ["example-view-materializer"]="build-2")'
   TG_LOCAL_PATH:
     description: 'Where cloud-deployment will be placed in the workflow agent'
     default: 'deploy'
@@ -42,10 +41,10 @@ runs:
       shell: bash
       run: |
         cd '${{ inputs.TG_LOCAL_PATH }}/${{ inputs.TG_APP_DIR }}'
-        declare -A builds=${{ inputs.LAMBDA_BUILDS_MAP }}
-        for key in "${!builds[@]}"; do
-            echo "Key: $key, Value: ${builds[$key]}"
-            hcledit attribute --update --file terragrunt.hcl set 'locals.$key_build_id' '"${builds[$key]}"'
+        ${{ inputs.LAMBDA_BUILDS_MAP }} # declaration, e.g. lambda_builds_map=( ["lambda"]="build" )
+        for key in "${!lambda_builds_map[@]}"; do
+            echo "Key: $key, Value: ${lambda_!lambda_builds_map[$key]}"
+            hcledit attribute --update --file terragrunt.hcl set 'locals.$key_build_id' '"${lambda_!lambda_builds_map[$key]}"'
         done
         cat terragrunt.hcl
 

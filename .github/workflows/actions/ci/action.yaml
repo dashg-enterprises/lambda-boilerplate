@@ -94,4 +94,4 @@ runs:
         done;
         echo "lambda_builds_map[@] - ${lambda_builds_map[@]}";
         echo "!lambda_builds_map[@] - ${!lambda_builds_map[@]}";
-        echo "lambda_builds_map=$lambda_builds_map" >> $GITHUB_OUTPUT;
+        echo "lambda_builds_map='$(declare -p lambda_builds_map)'" >> $GITHUB_OUTPUT;
