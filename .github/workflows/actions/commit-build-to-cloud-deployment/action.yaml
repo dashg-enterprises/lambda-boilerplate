@@ -44,9 +44,10 @@ runs:
         eval ${{ inputs.LAMBDA_BUILDS_MAP }} # declaration, e.g. declare -A lambda_builds_map=( ["lambda"]="build" )
         for key in "${!lambda_builds_map[@]}"; do
             echo "Key: $key, Value: ${lambda_builds_map[$key]}";
-            buildKey=$(echo $key | tr '-' '_');
+            buildKey=$(echo $key | tr '-' '_')_build_id;
             echo $buildKey;
-            hcledit attribute --update --file terragrunt.hcl set locals.${buildKey}_build_id '"${lambda_builds_map[$key]}"'
+            buildId=${lambda_builds_map[$key]}
+            hcledit attribute --update --file terragrunt.hcl set locals.$buildKey \"$buildId\"
         done
         cat terragrunt.hcl
 
