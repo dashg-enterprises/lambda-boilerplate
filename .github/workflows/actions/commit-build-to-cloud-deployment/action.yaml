@@ -13,6 +13,8 @@ inputs:
   TG_LOCAL_PATH:
     description: 'Where cloud-deployment will be placed in the workflow agent'
     default: 'deploy'
+  S3_REPOSITORY:
+    description: 'The name of the S3 bucket to use as a build repository for zip files'
 runs:
   using: "composite"
   steps:
@@ -51,7 +53,7 @@ runs:
       id: cpr
       uses: peter-evans/create-pull-request@v7
       with:
-        branch: "build/${{ env.ECR_REPOSITORY }}-${{ github.sha }}"
+        branch: "build/${{ env.S3_REPOSITORY }}-${{ github.sha }}"
         commit-message: "Update build for ${{ github.sha }}"
         token: ${{ inputs.CLOUD_DEPLOYMENT_PAT }}
         path: ${{ inputs.TG_LOCAL_PATH }}

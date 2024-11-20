@@ -68,6 +68,7 @@ jobs:
           TG_APP_DIR: ${{ env.TG_DEV_APP_DIR }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
           LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
+          S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
       - uses: ./.github/workflows/actions/cd
         with: 
           CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
@@ -92,6 +93,7 @@ jobs:
           TG_APP_DIR: ${{ env.TG_UAT_APP_DIR }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
           LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
+          S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
       - uses: ./.github/workflows/actions/cd
         with: 
           CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
@@ -116,6 +118,7 @@ jobs:
           TG_APP_DIR: ${{ env.TG_PROD_APP_DIR }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
           LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
+          S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
       - uses: ./.github/workflows/actions/cd
         with: 
           CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
