@@ -45,7 +45,7 @@ runs:
         declare -A builds=${{ inputs.LAMBDA_BUILDS_MAP }}
         for key in "${!builds[@]}"; do
             echo "Key: $key, Value: ${builds[$key]}"
-            hcledit attribute --update --file terragrunt.hcl set 'locals.$key' '"${builds[$key]}"'
+            hcledit attribute --update --file terragrunt.hcl set 'locals.$key_build_id' '"${builds[$key]}"'
         done
         cat terragrunt.hcl
 
