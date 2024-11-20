@@ -3,7 +3,7 @@ description: Project build action for AWS Lambda
 outputs:
   lambda_builds_map:
     description: "Application build images as output from CI" 
-    value: ${{ steps.build-step.outputs.value }}
+    value: ${{ steps.build-step.outputs.lambda_builds_map }}
 inputs:
   CLOUD_DEPLOYMENT_PAT:
     description: 'PAT to checkout cloud-deployment'
