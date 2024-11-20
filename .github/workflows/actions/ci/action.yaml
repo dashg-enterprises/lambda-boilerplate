@@ -89,11 +89,9 @@ runs:
             baseBuildId="${{ github.ref_name }}__${lambda}__${{ github.sha }}.zip"  
             buildId=$(echo $baseBuildId | tr '/' '_')
             aws s3 cp out/index.zip s3://${{ inputs.S3_REPOSITORY }}/$buildId
-            lambda_builds_map+=( [$lambda]=$buildId )
+            lambda_builds_map[$lambda]=$buildId
             echo $buildId
         done
-        echo "lambda_builds_map[0]} - ${lambda_builds_map[0]}"
-        echo "lambda_builds_map[1]} - ${lambda_builds_map[1]}"
         echo "lambda_builds_map[@] - ${lambda_builds_map[@]}"
         echo "!lambda_builds_map[@] - ${!lambda_builds_map[@]}"
         echo "lambda_builds_map=$lambda_builds_map" >> $GITHUB_OUTPUT
