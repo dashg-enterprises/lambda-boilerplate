@@ -77,23 +77,6 @@ runs:
         tg_dir: ${{ inputs.TG_LOCAL_PATH }}/${{ inputs.TG_DIR }}
         tg_command: '${{ inputs.TG_COMMAND }} --terragrunt-source ${{ inputs.TG_SOURCE }}'
 
-    - name: Test Bash Loop
-      id: loop
-      shell: bash
-      run: |
-        # declare -A vals=( "x" "y" "z")
-        # for val in "${vals[@]}"; do
-        #     echo $val
-        # done
-        # letters=("a" "b" "c")
-        # for x in "${letters[@]}"; do
-        #     echo $x
-        # done
-        lambdas=${{ inputs.LAMBDAS }}
-        for lambda in "${lambdas[@]}"; do
-            echo $lambda
-        done
-
     - name: Deploy build to bucket
       id: build-step
       shell: bash
@@ -103,12 +86,14 @@ runs:
         npm ci
         for lambda in "${lambdas[@]}"; do
             npm run build -- "src/$lambda/index.ts"
-            npm run postbuild
             baseBuildId="${{ github.ref_name }}__${lambda}__${{ github.sha }}.zip"  
             buildId=$(echo $baseBuildId | tr '/' '_')
             aws s3 cp out/index.zip s3://${{ inputs.S3_REPOSITORY }}/$buildId
             lambda_builds_map+=( [$lambda]=$buildId )
             echo $buildId
         done
-        echo $lambda_builds_map
+        echo "lambda_builds_map[0]} - ${lambda_builds_map[0]}"
+        echo "lambda_builds_map[1]} - ${lambda_builds_map[1]}"
+        echo "lambda_builds_map[@] - ${lambda_builds_map[@]}"
+        echo "!lambda_builds_map[@] - ${!lambda_builds_map[@]}"
         echo "lambda_builds_map=$lambda_builds_map" >> $GITHUB_OUTPUT
