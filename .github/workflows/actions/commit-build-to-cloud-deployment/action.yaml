@@ -41,10 +41,10 @@ runs:
       shell: bash
       run: |
         cd '${{ inputs.TG_LOCAL_PATH }}/${{ inputs.TG_APP_DIR }}'
-        ${{ inputs.LAMBDA_BUILDS_MAP }} # declaration, e.g. lambda_builds_map=( ["lambda"]="build" )
+        eval ${{ inputs.LAMBDA_BUILDS_MAP }} # declaration, e.g. declare -A lambda_builds_map=( ["lambda"]="build" )
         for key in "${!lambda_builds_map[@]}"; do
-            echo "Key: $key, Value: ${lambda_!lambda_builds_map[$key]}"
-            hcledit attribute --update --file terragrunt.hcl set 'locals.$key_build_id' '"${lambda_!lambda_builds_map[$key]}"'
+            echo "Key: $key, Value: ${lambda_builds_map[$key]}"
+            hcledit attribute --update --file terragrunt.hcl set 'locals.${key}_build_id' '"${lambda_builds_map[$key]}"'
         done
         cat terragrunt.hcl
 
