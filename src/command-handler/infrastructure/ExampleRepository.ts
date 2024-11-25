@@ -1,6 +1,5 @@
-import { AggregateRepository } from "../../DDD/AggregateRepository";
-import { EventLogRepository } from "../../DDD/EventLogRepository";
-import { SnapshotRepository } from "../../DDD/SnapshotRepository";
+import { AggregateRepository, EventLogRepository, SnapshotRepository } from "@dashg-enterprises/ddd-platform";
+
 
 export class ExampleRepository extends AggregateRepository {
     constructor(eventLogRepository: EventLogRepository, snapshotRepository: SnapshotRepository) {
