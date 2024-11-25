@@ -5,8 +5,4 @@ export class ExampleRepository extends AggregateRepository {
     constructor(eventLogRepository: EventLogRepository, snapshotRepository: SnapshotRepository) {
         super(eventLogRepository, snapshotRepository);
     }
-
-    get(byId: string) {
-
-    }
 }

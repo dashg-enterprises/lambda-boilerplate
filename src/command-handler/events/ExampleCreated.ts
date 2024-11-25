@@ -1,9 +1,10 @@
-import { DomainEvent } from "../../DDD/DomainEvent";
+import { DomainEvent } from "@dashg-enterprises/ddd-platform";
+import { CreateExample } from "../commands/CreateExample";
 
 export class ExampleCreated extends DomainEvent {
     name: string;
-    constructor(sequenceId: string, correlationId: string, exampleId: string, exampleName: string) {
-        super("ExampleCreated", sequenceId, exampleId, correlationId);
+    constructor(correlationId: string, exampleId: string, exampleName: string, cause: CreateExample) {
+        super("ExampleCreated", "ExampleContext", "Example", cause, exampleId, correlationId);
         this.name = exampleName;
     }
 }

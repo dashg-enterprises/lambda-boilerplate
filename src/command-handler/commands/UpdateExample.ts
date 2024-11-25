@@ -1,9 +1,9 @@
 import { DomainCommand } from "@dashg-enterprises/ddd-platform";
 
-export class CreateExample extends DomainCommand {
+export class UpdateExample extends DomainCommand {
     name: string;
     constructor(exampleId: string, exampleName: string) {
-        super("ExampleCreated", "ExampleContext", "Example", exampleId);
+        super("ExampleUpdated", "ExampleContext", "Example", exampleId);
         this.name = exampleName;
     }
 }
