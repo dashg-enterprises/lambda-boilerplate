@@ -1,5 +1,4 @@
-import { DomainEventBroadcaster } from "../../DDD/DomainEventBroadcaster";
-import { DomainEventPublisher } from "../../DDD/DomainEventPublisher";
+import { DomainEventBroadcaster, DomainEventPublisher } from "@dashg-enterprises/ddd-platform";
 import { CreateExample } from "../commands/CreateExample";
 import { Example } from "../domain/Example";
 import { ExampleCreated } from "../events/ExampleCreated";

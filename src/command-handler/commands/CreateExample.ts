@@ -1,9 +1,15 @@
-import { DomainCommand } from "@dashg-enterprises/ddd-platform";
+import { CommandMetadata, DomainCommand } from "@dashg-enterprises/ddd-platform";
 
-export class CreateExample extends DomainCommand {
+export class CreateExampleCommand {
     name: string;
-    constructor(exampleId: string, exampleName: string) {
-        super("ExampleCreated", "ExampleContext", "Example", exampleId);
-        this.name = exampleName;
+    constructor(name: string){
+        this.name = name;
+    }
+}
+
+export class CreateExample extends DomainCommand<CreateExampleCommand> {
+    constructor(command: CreateExampleCommand) {
+        const metadata = new CommandMetadata({type: "ExampleCreated", context: "ExampleContext", aggregate: "Example", aggregateId: ""});
+        super(command, metadata);
     }
 }

@@ -1,10 +1,27 @@
-import { DomainEvent } from "@dashg-enterprises/ddd-platform";
+import { DomainEvent, EventMetadata } from "@dashg-enterprises/ddd-platform";
 import { CreateExample } from "../commands/CreateExample";
 
-export class ExampleCreated extends DomainEvent {
+export class ExampleCreatedEvent {
+    exampleId: string;
     name: string;
-    constructor(correlationId: string, exampleId: string, exampleName: string, cause: CreateExample) {
-        super("ExampleCreated", "ExampleContext", "Example", cause, exampleId, correlationId);
-        this.name = exampleName;
+    constructor(exampleId: string, name: string) {
+        this.exampleId = exampleId;
+        this.name = name;
+    }
+}
+
+type ConcreteMetadata = Pick<EventMetadata, 'aggregateId' | 'correlationId' | 'cause'>;
+
+export class ExampleCreated extends DomainEvent<ExampleCreatedEvent> {
+    constructor(event: ExampleCreatedEvent, cause: CreateExample) {
+        const metadata = new EventMetadata({
+            type: "ExampleCreated",
+            context: "ExampleContext",
+            aggregate: "Example",
+            aggregateId: cause.metadata.aggregateId,
+            correlationId: cause.metadata.correlationId,
+            cause
+        })
+        super(event, metadata);
     }
 }

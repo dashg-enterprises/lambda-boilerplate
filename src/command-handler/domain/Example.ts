@@ -1,6 +1,6 @@
 import { Aggregate, EventLog } from "@dashg-enterprises/ddd-platform";
 import { CreateExample } from "../commands/CreateExample";
-import { ExampleCreated } from "../events/ExampleCreated";
+import { ExampleCreated, ExampleCreatedEvent } from "../events/ExampleCreated";
 import { ExampleUpdated } from "../events/ExampleUpdated";
 
 export class Example extends Aggregate {
@@ -8,20 +8,24 @@ export class Example extends Aggregate {
     private name?: string;
     constructor(eventLog?: EventLog) {
         super(eventLog);
-        this.registerHandler(this.create, "CreateExample");
-        this.registerApplier(this.created);
+        this.registerHandler({
+            handlerFn: this.create,
+            commandType: "CreateExample"
+        });
+        this.registerApplier({
+            applierFn: this.created, 
+            eventType: "ExampleCreated"
+        });
     }
     create(createExample: CreateExample) {
-        if (!createExample.name) throw new Error("Name is required for this example.");
+        if (!createExample.command.name) throw new Error("Name is required for this example.");
 
-        const domainEvent = new ExampleCreated(createExample.correlationId, this.id, createExample.name, createExample);
+        const exampleCreatedEvent = new ExampleCreatedEvent(this.id, createExample.command.name);
+        const domainEvent = new ExampleCreated(exampleCreatedEvent, createExample);
         return domainEvent;
     }
 
     created(exampleCreated: ExampleCreated) {
-        this.id = exampleCreated.aggregateId;
-        this.name = exampleCreated.name;
-        this.eventLog.append(exampleCreated);
-        return this;
+        this.name = exampleCreated.event.name;
     }
 }
