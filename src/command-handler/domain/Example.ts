@@ -8,14 +8,8 @@ export class Example extends Aggregate {
     private name?: string;
     constructor(eventLog?: EventLog) {
         super(eventLog);
-        this.registerHandler({
-            handlerFn: this.create,
-            commandType: "CreateExample"
-        });
-        this.registerApplier({
-            applierFn: this.created, 
-            eventType: "ExampleCreated"
-        });
+        this.registerHandler(this.create).for("CreateExample");
+        this.registerApplier(this.created).for("ExampleCreated");
     }
     create(createExample: CreateExample) {
         if (!createExample.command.name) throw new Error("Name is required for this example.");
@@ -27,5 +21,9 @@ export class Example extends Aggregate {
 
     created(exampleCreated: ExampleCreated) {
         this.name = exampleCreated.event.name;
+    }
+
+    getName() {
+        return this.name;
     }
 }
