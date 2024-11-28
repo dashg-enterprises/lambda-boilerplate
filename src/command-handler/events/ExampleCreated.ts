@@ -18,8 +18,6 @@ export class ExampleCreated extends DomainEvent<ExampleCreatedEvent> {
             type: "ExampleCreated",
             context: "ExampleContext",
             aggregate: "Example",
-            aggregateId: cause.metadata.aggregateId,
-            correlationId: cause.metadata.correlationId,
             cause
         })
         super(event, metadata);

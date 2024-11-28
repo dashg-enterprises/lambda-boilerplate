@@ -132,8 +132,6 @@ dist
 # Local .terraform directories
 **/.terraform/*
 
-*.js
-*.js.map
 *.zip
 
 dist

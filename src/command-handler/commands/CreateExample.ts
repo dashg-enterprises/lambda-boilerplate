@@ -9,7 +9,12 @@ export class CreateExampleCommand {
 
 export class CreateExample extends DomainCommand<CreateExampleCommand> {
     constructor(command: CreateExampleCommand) {
-        const metadata = new CommandMetadata({type: "ExampleCreated", context: "ExampleContext", aggregate: "Example", aggregateId: ""});
+        const metadata = new CommandMetadata({
+            type: "CreateExample",
+            context: "ExampleContext",
+            aggregate: "Example",
+            aggregateId: ""
+        });
         super(command, metadata);
     }
 }
