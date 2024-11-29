@@ -1,19 +1,21 @@
 import 'reflect-metadata'
-import { Handler } from 'aws-lambda';
-import { EventBridgeEvent } from '../DDD/DomainEventPublisher';
-import { CreateExample } from "./commands/CreateExample";
-import { Host } from './Host';
-import { IExampleService } from './application/ExampleService';
+import { APIGatewayEvent, EventBridgeEvent, Handler, SQSEvent } from 'aws-lambda';
+import { CreateExample, CreateExampleCommand } from "./commands/CreateExample";
+import { Host, IHandler } from '@dashg-enterprises/ddd-platform';
+import { TYPES } from './TYPES';
+import { ICreateExampleHandler } from './application/CreateExampleHandler';
 
 /*global handler @preserve*/
-export const handler: Handler<EventBridgeEvent> = async (event, context) => {
-    console.log('EVENT: \n' + JSON.stringify(event, null, 2));
-    const command = new CreateExample("Hello, world!");
+export const handler: Handler<SQSEvent & APIGatewayEvent> = async (awsEvent, context) => {
+    console.log('EVENT: \n' + JSON.stringify(awsEvent, null, 2));
+    const inboundCommand = JSON.parse(awsEvent.Records[0].body) as CreateExample;
+
+    const command = inboundCommand instanceof CreateExample ? inboundCommand : new CreateExample(new CreateExampleCommand("Hello, world!"));
 
     const host = new Host();
-    const exampleService = host.get<IExampleService>();
+    const createExampleHandler = host.get<ICreateExampleHandler>(TYPES.ICreateExampleHandler);
 
-    const [domainEvent, snapshot] = await exampleService.createExample(command);
+    const [domainEvent, snapshot] = await createExampleHandler.handle(command);
 
     return {
         isBase64Encoded: false,
