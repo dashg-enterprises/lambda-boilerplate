@@ -7,4 +7,5 @@ import { TYPES } from "./TYPES";
 export const host = new Host()
     .withDDD(Example)
     .withExplicitHandler<ICreateExampleHandler, CreateExampleHandler, CreateExample>(CreateExampleHandler, TYPES.ICreateExampleHandler)
-    .withHandler<CreateExampleHandler, CreateExample>(CreateExampleHandler, "CreateExample");
+    .withNamedHandler<CreateExample>(CreateExampleHandler, CreateExample.name)
+    .withHandler<CreateExampleHandler, CreateExample>(CreateExampleHandler, CreateExample.name)

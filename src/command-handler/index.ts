@@ -4,6 +4,7 @@ import { CreateExample, CreateExampleCommand } from "./commands/CreateExample";
 import { Host, IDomainCommand, IDomainEvent, IHandler, Snapshot } from '@dashg-enterprises/ddd-platform';
 import { TYPES } from './TYPES';
 import { ICreateExampleHandler } from './application/CreateExampleHandler';
+import { host } from './inversify.config';
 
 /*global handler @preserve*/
 export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = async (awsEvent, context) => {
@@ -11,7 +12,10 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
     const inboundCommand = JSON.parse(awsEvent.Records[0].body) as IDomainCommand;
     const command = inboundCommand instanceof CreateExample ? inboundCommand : new CreateExample(new CreateExampleCommand("Hello, world!"));
 
-    const host = new Host();
+    const commandHandler = host.getNamedHandler(command);
+    const whatHappened = await commandHandler.handle(command);
+    return responseFrom(whatHappened);
+
     try {
         switch (command.metadata.type) {
             case CreateExample.name: {
@@ -19,7 +23,8 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
                 const result = await createExampleHandler.handle(command);
                 return responseFrom(result);
             } default: {
-                const commandHandler = host.getHandler<IHandler<IDomainCommand>, IDomainCommand>(command);
+                const commandHandler = host.getNamedHandler(command);
+                // const commandHandler = host.getHandler<IHandler<IDomainCommand>, IDomainCommand>(command);
                 const result = await commandHandler.handle(command);
                 return responseFrom(result);
             }

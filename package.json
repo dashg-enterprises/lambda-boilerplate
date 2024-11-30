@@ -18,7 +18,8 @@
     "@types/aws-lambda": "^8.10.143",
     "@types/node": "^22.5.0",
     "@types/uuid": "^10.0.0",
-    "esbuild": "^0.23.1"
+    "esbuild": "^0.23.1",
+    "ts-jest-mocker": "^1.1.0"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.637.0",
@@ -28,7 +29,7 @@
     "@babel/core": "^7.23.6",
     "@babel/preset-env": "^7.23.6",
     "@babel/preset-typescript": "^7.23.3",
-    "@dashg-enterprises/ddd-platform": "^0.23.0",
+    "@dashg-enterprises/ddd-platform": "^0.28.0",
     "@jest/globals": "^29.7.0",
     "@typedorm/common": "^1.15.4",
     "@typedorm/core": "^1.15.4",
