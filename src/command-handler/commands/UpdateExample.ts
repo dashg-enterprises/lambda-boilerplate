@@ -1,4 +1,4 @@
-import { CommandMetadata, DomainCommand } from "@dashg-enterprises/ddd-platform";
+import { CommandMetadata, DomainCommand, IDomainCommand } from "@dashg-enterprises/ddd-platform";
 
 export class UpdateExampleCommand {
     exampleId: string;
@@ -12,12 +12,18 @@ export class UpdateExampleCommand {
 }
 
 export class UpdateExample extends DomainCommand<UpdateExampleCommand> {
+    static isTypeOf = (command: IDomainCommand): command is UpdateExample => {
+        return command.metadata.type == UpdateExample.metadata.type;
+    }
+
+    static metadata = new CommandMetadata({
+        type: "UpdateExample",
+        context: "ExampleContext",
+        aggregate: "Example",
+        aggregateId: ""
+    });
+
     constructor(command: UpdateExampleCommand) {
-        super(command, new CommandMetadata({
-            type: "ExampleUpdated",
-            context: "ExampleContext",
-            aggregate: "Example",
-            aggregateId: command.exampleId
-        }));
+        super(command, UpdateExample.metadata);
     }
 }

@@ -9,16 +9,21 @@ import { host } from './inversify.config';
 /*global handler @preserve*/
 export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = async (awsEvent, context) => {
     console.log('EVENT: \n' + JSON.stringify(awsEvent, null, 2));
-    const inboundCommand = JSON.parse(awsEvent.Records[0].body) as IDomainCommand;
-    const command = inboundCommand instanceof CreateExample ? inboundCommand : new CreateExample(new CreateExampleCommand("Hello, world!"));
+    const command = JSON.parse(awsEvent.Records[0].body) as IDomainCommand;
+    console.log("-------------command----------------");
+    console.log(JSON.stringify(command));
+    console.log("-------------bindings---------------");
+    console.log(JSON.stringify((host.eject() as any)._bindingDictionary));
+    console.log("-------------container--------------");
+    console.log(host.eject());
+    console.log("------------------------------------");
 
-    const commandHandler = host.getNamedHandler(command);
-    const whatHappened = await commandHandler.handle(command);
-    return responseFrom(whatHappened);
-
+    // const commandHandler = host.getNamedHandler(command);
+    // const whatHappened = await commandHandler.handle(command);
+    // return responseFrom(whatHappened);
     try {
-        switch (command.metadata.type) {
-            case CreateExample.name: {
+        switch (true) {
+            case CreateExample.isTypeOf(command): {
                 const createExampleHandler = host.get<ICreateExampleHandler>(TYPES.ICreateExampleHandler);
                 const result = await createExampleHandler.handle(command);
                 return responseFrom(result);

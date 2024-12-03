@@ -8,4 +8,4 @@ export const host = new Host()
     .withDDD(Example)
     .withExplicitHandler<ICreateExampleHandler, CreateExampleHandler, CreateExample>(CreateExampleHandler, TYPES.ICreateExampleHandler)
     .withNamedHandler<CreateExample>(CreateExampleHandler, CreateExample.name)
-    .withHandler<CreateExampleHandler, CreateExample>(CreateExampleHandler, CreateExample.name)
+    .withHandler<CreateExampleHandler, CreateExample>(CreateExampleHandler, CreateExample.name);
