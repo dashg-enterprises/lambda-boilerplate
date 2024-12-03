@@ -11,12 +11,12 @@ on:
       uat:
         description: "Should deploy to uat"
         required: true
-        default: true
+        default: false
         type: boolean
       prod:
         description: "Should deploy to prod"
         required: true
-        default: true
+        default: false
         type: boolean
 
 env:
