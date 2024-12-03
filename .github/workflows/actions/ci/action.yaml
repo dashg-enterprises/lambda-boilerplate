@@ -15,6 +15,8 @@ inputs:
     description: 'AWS access key secret'
   AWS_REGION:
     description: 'AWS region'
+  NPM_DDD_PLATFORM_ACCESS_TOKEN:
+    description: 'PAT to access dashg-enterprises/ddd-platform on NPM'
   GIT_ORGANIZATION_NAME:
     description: 'Name of the organization to checkout cloud-deployment'
   S3_REPOSITORY:
@@ -80,6 +82,8 @@ runs:
     - name: Deploy build to bucket
       id: build-step
       shell: bash
+      env:
+        NPM_DDD_PLATFORM_ACCESS_TOKEN: ${{ inputs.NPM_DDD_PLATFORM_ACCESS_TOKEN }}      
       run: |
         declare -a lambdas=${{ inputs.LAMBDAS }};
         declare -A lambda_builds_map;

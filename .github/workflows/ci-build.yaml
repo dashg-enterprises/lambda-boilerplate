@@ -27,6 +27,7 @@ env:
   TG_VERSION: '0.63.6'
   TG_DIR: 'live/aws/_initializations/lambda-boilerplate'
   TG_LOCAL_PATH: 'deploy'
+  NPM_DDD_PLATFORM_ACCESS_TOKEN: ${{ secrets.NPM_DDD_PLATFORM_ACCESS_TOKEN }}
   BUILD_ID: ${{ github.ref_name }}__${{ inputs.lambda }}__${{ github.sha }}.zip
 
 jobs:
@@ -67,7 +68,7 @@ jobs:
         uses: gruntwork-io/terragrunt-action@v2
         env:
           INPUT_PRE_EXEC_1: |
-            git config --global url."https://user:${{secrets.DASHG_CLOUD_PLATFORM_PAT}}@github.com/dashg-enterprises".insteadOf "https://github.com/dashg-enterprises"
+            git config --global url."https://user:${{secrets.DASHG_CLOUD_PLATFORM_PAT}}@github.com/dashg-enterprises/cloud-platform".insteadOf "https://github.com/dashg-enterprises/cloud-platform"
           INPUT_PRE_EXEC_2: |
             git config --global url."https://user:${{secrets.CLOUD_DEPLOYMENT_PAT}}@github.com".insteadOf "https://github.com"
           INPUT_PRE_EXEC_3: |
