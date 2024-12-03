@@ -34,7 +34,8 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
                 return responseFrom(result);
             }
         }
-    } catch (error) {
+    } catch (e) {
+        console.error(e);
         return errorFrom(command);
     }
 };
