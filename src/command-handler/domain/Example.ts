@@ -8,8 +8,8 @@ export class Example extends Aggregate {
     private name?: string;
     constructor(eventLog?: EventLog) {
         super(eventLog);
-        this.registerHandler(this.create.bind(this)).for("CreateExample");
-        this.registerApplier(this.created.bind(this)).for("ExampleCreated");
+        this.registerHandler(this.create.bind(this)).for(CreateExample.metadata.type);
+        this.registerApplier(this.created.bind(this)).for(CreateExample.metadata.type);
     }
     create(createExample: CreateExample) {
         if (!createExample.command.name) throw new Error("Name is required for this example.");
