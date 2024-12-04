@@ -12,8 +12,6 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
     const command = JSON.parse(awsEvent.Records[0].body) as IDomainCommand;
     console.log("-------------command----------------");
     console.log(JSON.stringify(command));
-    console.log("-------------bindings---------------");
-    console.log(JSON.stringify((host.eject() as any)._bindingDictionary));
     console.log("-------------container--------------");
     console.log(host.eject());
     console.log("------------------------------------");
@@ -28,8 +26,7 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
                 const result = await createExampleHandler.handle(command);
                 return responseFrom(result);
             } default: {
-                const commandHandler = host.getNamedHandler(command);
-                // const commandHandler = host.getHandler<IHandler<IDomainCommand>, IDomainCommand>(command);
+                const commandHandler = host.getHandler<IHandler<IDomainCommand>, IDomainCommand>(command);
                 const result = await commandHandler.handle(command);
                 return responseFrom(result);
             }
