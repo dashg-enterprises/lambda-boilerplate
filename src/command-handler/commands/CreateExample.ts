@@ -13,7 +13,7 @@ export class CreateExample extends DomainCommand<CreateExampleCommand> {
     }
 
     static metadata = new CommandMetadata({
-        type: CreateExample.name,
+        type: "CreateExample",
         context: "ExampleContext",
         aggregate: "Example",
         aggregateId: ""
