@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { APIGatewayProxyResult, APIGatewayEvent, Handler } from 'aws-lambda';
 import { host } from './inversify.config';
 import { TYPES } from './TYPES';
