@@ -69,6 +69,6 @@ runs:
 
     - name: Merge PR to cloud-deployment
       shell: bash
-      run: gh pr merge --merge --admin "${{ steps.cpr.outputs.pull-request-number }}" --repo "${{ inputs.GIT_ORGANIZATION_NAME }}/cloud-deployment"
+      run: gh pr merge --merge --admin "${{ steps.cpr.outputs.pull-request-number }}" --repo "${{ inputs.GIT_ORGANIZATION_NAME }}/cloud-deployment" || true
       env:
         GH_TOKEN: ${{ inputs.CLOUD_DEPLOYMENT_PAT }}
