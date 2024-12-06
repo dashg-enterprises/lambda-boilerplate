@@ -13,7 +13,7 @@ export abstract class RepositoryBase<TEntity> implements IRepository<TEntity> {
     }
 
     async create(entity: Partial<TEntity>) {
-        return await this.entityManager.create<TEntity>(this.ViewEntity, entity);
+        return await this.entityManager.create<TEntity>(entity);
     }
 
     async findOne(query: Partial<TEntity>) {
