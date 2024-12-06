@@ -1,7 +1,7 @@
 import { INDEX_TYPE, Table } from "@typedorm/common";
 
 export const table = new Table({
-    name: 'ExampleContext',
+    name: process.env.MATERIALIZED_VIEWS_TABLE_NAME,
     partitionKey: 'PK',
     sortKey: 'SK',
     indexes: {
