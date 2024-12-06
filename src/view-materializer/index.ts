@@ -11,9 +11,13 @@ export const handler: Handler<APIGatewayEvent> = async (event, context): Promise
     console.log(`Context: ${JSON.stringify(context, null, 2)}`);
     if (!event.body) throw new Error("Body required");
     const snapshot = JSON.parse(event.body) as Example;
+    const newExample = new Example();
+    newExample.id = snapshot.id;
+    newExample.name = snapshot.name;
+    newExample.status = "materialized";
     const exampleRepo = host.get<IExampleRepository>(TYPES.IExampleRepository);
-    const newExample = await exampleRepo.create(snapshot);
-    const example = await exampleRepo.findOne({id: snapshot.id});
+    const createdExample = await exampleRepo.create(newExample);
+    const example = await exampleRepo.findOne({snapshotId: createdExample.snapshotId});
     const examples = await exampleRepo.find({});
     
     return {
