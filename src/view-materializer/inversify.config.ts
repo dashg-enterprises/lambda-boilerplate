@@ -6,9 +6,12 @@ import { IExampleRepository } from "./infrastructure/IExampleRepository";
 import { EntityManager, getEntityManager } from "@typedorm/core";
 import { connect } from "./infrastructure/table.config";
 import { PLATFORM_TYPES } from "./PLATFORM_TYPES";
+import { IExampleController } from "../view-api/presentation/IExampleController";
+import ExampleController from "../view-api/presentation/ExampleController";
 
 const container = new Container();
 container.bind<IExampleRepository>(TYPES.IExampleRepository).to(ExampleRepository);
+container.bind<IExampleController>(TYPES.IExampleController).to(ExampleController);
 
 container.bind<EntityManager>(PLATFORM_TYPES.EntityManager)
     .toDynamicValue(() => connect() && getEntityManager());
