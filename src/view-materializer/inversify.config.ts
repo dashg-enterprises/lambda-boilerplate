@@ -3,7 +3,7 @@ import { Container } from "inversify";
 import { TYPES } from "./TYPES";
 import { ExampleRepository } from "./infrastructure/ExampleRepository";
 import { IExampleRepository } from "./infrastructure/IExampleRepository";
-import { EntityManager, getEntityManager } from "@typedorm/core";
+import { EntityManager, getEntityManager, ScanManager, getScanManager } from "@typedorm/core";
 import { connect } from "./infrastructure/table.config";
 import { PLATFORM_TYPES } from "./PLATFORM_TYPES";
 import { IExampleController } from "../view-api/presentation/IExampleController";
@@ -15,5 +15,8 @@ container.bind<IExampleController>(TYPES.IExampleController).to(ExampleControlle
 
 container.bind<EntityManager>(PLATFORM_TYPES.EntityManager)
     .toDynamicValue(() => connect() && getEntityManager());
+
+container.bind<ScanManager>(PLATFORM_TYPES.ScanManager)
+    .toDynamicValue(() => connect() && getScanManager());
 
 export const host = new Host(container);
