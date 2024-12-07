@@ -29,7 +29,6 @@ concurrency: one-deploy-at-a-time
 
 env:
   AWS_REGION: us-east-1              
-  S3_REPOSITORY: lambdaboilerplate-builds
   TF_VERSION: '1.9.3'
   TG_VERSION: '0.63.6'
   TG_DIR: 'live/aws/${{ inputs.environment }}/applications/lambda-boilerplate'

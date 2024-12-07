@@ -23,7 +23,7 @@ env:
   AWS_REGION: us-east-1              
   S3_REPOSITORY: examplecontext-builds
   GIT_ORGANIZATION_NAME: dashg-enterprises
-  LAMBDAS: ( "command-handler" "view-materializer" )
+  LAMBDAS: ( "command-handler" "view-materializer" "view-api" )
   TG_INIT_DIR: 'live/aws/_initializations/lambda-boilerplate'
   TG_DEV_APP_DIR: 'live/aws/dev/applications/lambda-boilerplate'
   TG_UAT_APP_DIR: 'live/aws/uat/applications/lambda-boilerplate'

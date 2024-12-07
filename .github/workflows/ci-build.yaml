@@ -11,6 +11,7 @@ on:
         options:
           - command-handler
           - view-materializer
+          - view-api
       command:
         description: "The command to run"
         required: true

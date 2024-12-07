@@ -83,7 +83,7 @@ runs:
       id: build-step
       shell: bash
       env:
-        NPM_DDD_PLATFORM_ACCESS_TOKEN: ${{ inputs.NPM_DDD_PLATFORM_ACCESS_TOKEN }}      
+        NPM_DDD_PLATFORM_ACCESS_TOKEN: ${{ inputs.NPM_DDD_PLATFORM_ACCESS_TOKEN }}
       run: |
         declare -a lambdas=${{ inputs.LAMBDAS }};
         declare -A lambda_builds_map;
