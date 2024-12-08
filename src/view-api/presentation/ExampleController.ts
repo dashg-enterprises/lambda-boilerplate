@@ -14,7 +14,7 @@ export default class ExampleController extends LambdaControllerBase implements I
 
     public static basePath = "/users/:userId/examples";
 
-    public static getByIdPath = `${this.basePath}/:id`;
+    public static getByIdPath = `${ExampleController.basePath}/:id`;
     public async getById(req: APIGatewayEvent) {
         const { userId, id } = req.pathParameters || {};
         if (!id || !userId)
