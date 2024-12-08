@@ -28,7 +28,7 @@ export default class ExampleController extends LambdaControllerBase implements I
         return this.ok(example);
     }
 
-    public static getPath = this.basePath;
+    public static getPath = ExampleController.basePath;
     public async get(req: APIGatewayEvent) {
         const { userId } = req.pathParameters || {};
 
