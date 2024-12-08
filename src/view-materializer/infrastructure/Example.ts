@@ -5,7 +5,7 @@ import {AUTO_GENERATE_ATTRIBUTE_STRATEGY} from '@typedorm/common';
   name: 'example',
   primaryKey: {
     partitionKey: 'EXAMPLE#{{userId}}',
-    sortKey: 'EXAMPLE#{{userId}}',
+    sortKey: 'EXAMPLE#{{id}}',
   },
   indexes: {
     // specify GSI1 key - "GSI1" named global secondary index needs to exist in above table declaration
