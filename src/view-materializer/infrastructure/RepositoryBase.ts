@@ -24,8 +24,9 @@ export abstract class RepositoryBase<TEntity> implements IRepository<TEntity> {
     }
     
     async find(query: Partial<TEntity>) {
-        // const results = await this.entityManager.find<TEntity>(this.ViewEntity, query);
-        const result = await this.scanManager.scan<TEntity>();
-        return result.items || [];
+        const result = await this.entityManager.find<TEntity>(this.ViewEntity, query);
+        return result.items;
+        // const result = await this.scanManager.scan<TEntity>();
+        // return result.items || [];
     }
 }

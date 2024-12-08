@@ -14,16 +14,15 @@ export const handler: Handler<APIGatewayEvent> = async (event, context): Promise
     const newExample = new Example();
     newExample.id = snapshot.id;
     newExample.name = snapshot.name;
+    newExample.userId = snapshot.userId;
     newExample.status = "materialized";
     const exampleRepo = host.get<IExampleRepository>(TYPES.IExampleRepository);
     const createdExample = await exampleRepo.create(newExample);
-    const example = await exampleRepo.findOne({snapshotId: createdExample.snapshotId});
-    const examples = await exampleRepo.find({});
     
     return {
         statusCode: 200,
         body: JSON.stringify({
-            message: example,
+            message: createdExample,
         }),
     };
 };

@@ -12,24 +12,30 @@ export default class ExampleController extends LambdaControllerBase implements I
         this.repo = repo;
     }
 
-    public static getByIdPath = "/examples/:id";
-    public async getById(req: APIGatewayEvent) {
-        if (!req.pathParameters || !req.pathParameters.id)
-            return this.badRequest("Id is required.");
+    public static basePath = "/users/:userId/examples";
 
-        const { id } = req.pathParameters;
-        const example = await this.repo.findOne({ id });
+    public static getByIdPath = `${this.basePath}/:id`;
+    public async getById(req: APIGatewayEvent) {
+        const { userId, id } = req.pathParameters || {};
+        if (!id || !userId)
+            return this.badRequest("Id and userId are required.");
+
+        
+        const example = await this.repo.findOne({ userId, id });
 
         if (!example) return this.notFound(`Example with id ${id} not found.`);
 
         return this.ok(example);
     }
 
-    public static getPath = "/examples";
+    public static getPath = this.basePath;
     public async get(req: APIGatewayEvent) {
-        const { status, name } = req.queryStringParameters || {};
+        const { userId } = req.pathParameters || {};
 
-        const examples = await this.repo.find({ status, name });
+        if (!userId) return this.badRequest("userId is required.");
+
+        const { status, name } = req.queryStringParameters || {};
+        const examples = await this.repo.find({ userId, status, name });
 
         return this.ok(examples);
     }

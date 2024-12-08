@@ -4,14 +4,14 @@ import {AUTO_GENERATE_ATTRIBUTE_STRATEGY} from '@typedorm/common';
 @Entity({
   name: 'example',
   primaryKey: {
-    partitionKey: 'EXAMPLE#{{id}}',
-    sortKey: 'EXAMPLE#{{id}}',
+    partitionKey: 'EXAMPLE#{{userId}}',
+    sortKey: 'EXAMPLE#{{userId}}',
   },
   indexes: {
     // specify GSI1 key - "GSI1" named global secondary index needs to exist in above table declaration
     GSI1: {
-      partitionKey: 'EXAMPLE#{{id}}#STATUS#{{status}}',
-      sortKey: 'EXAMPLE#{{id}}#NAME#{{name}}',
+      partitionKey: 'EXAMPLE#{{userId}}#STATUS#{{status}}',
+      sortKey: 'EXAMPLE#{{userId}}#NAME#{{name}}',
       type: INDEX_TYPE.GSI,
     },
     // specify LSI1 key
@@ -24,6 +24,9 @@ import {AUTO_GENERATE_ATTRIBUTE_STRATEGY} from '@typedorm/common';
 export class Example {
   @Attribute()
   id!: string;
+
+  @Attribute()
+  userId!: string;
 
   @AutoGenerateAttribute({
     strategy: AUTO_GENERATE_ATTRIBUTE_STRATEGY.UUID4,
