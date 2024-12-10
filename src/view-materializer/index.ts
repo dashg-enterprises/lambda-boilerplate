@@ -15,7 +15,7 @@ export const handler: Handler<APIGatewayEvent> = async (event, context): Promise
     newExample.id = snapshot.id;
     newExample.name = snapshot.name;
     newExample.userId = snapshot.userId;
-    newExample.status = "materialized";
+    newExample.status = snapshot.status;
     const exampleRepo = host.get<IExampleRepository>(TYPES.IExampleRepository);
     const createdExample = await exampleRepo.create(newExample);
     
