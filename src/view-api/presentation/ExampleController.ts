@@ -4,6 +4,9 @@ import { APIGatewayEvent } from 'aws-lambda';
 import { IExampleRepository } from "../../view-materializer/infrastructure/IExampleRepository";
 import { LambdaControllerBase } from "./base/LambdaControllerBase";
 import { IExampleController } from "./IExampleController";
+import { QUERY_ORDER } from "@typedorm/common";
+import { Paginated } from "./base/Paginated";
+import { Example } from "../../view-materializer/infrastructure/Example";
 
 export default class ExampleController extends LambdaControllerBase implements IExampleController {
     private readonly repo: IExampleRepository;
@@ -20,7 +23,7 @@ export default class ExampleController extends LambdaControllerBase implements I
         if (!id || !userId)
             return this.badRequest("Id and userId are required.");
 
-        
+
         const example = await this.repo.findOne({ userId, id });
 
         if (!example) return this.notFound(`Example with id ${id} not found.`);
@@ -34,9 +37,36 @@ export default class ExampleController extends LambdaControllerBase implements I
 
         if (!userId) return this.badRequest("userId is required.");
 
-        const { status, name } = req.queryStringParameters || {};
-        const examples = await this.repo.find({ userId, status, name });
+        const { status, name, cursor, limit } = req.queryStringParameters || {};
 
-        return this.ok(examples);
+        const [ cursorPartitionKey, cursorSortKey ] = cursor?.split(":") || [];
+
+        const queryCursor = {
+            partitionKey: cursorPartitionKey,
+            soryKey: cursorSortKey
+        };
+
+        const pageOfExamples = await this.repo.page({ userId }, {
+            queryIndex: 'GSI1',
+            keyCondition: {
+                BEGINS_WITH: `EXAMPLE#${userId}#${status}`,
+            },
+            where: {
+                AND: {
+                    // age: {
+                    //     BETWEEN: [1, 5],
+                    // },
+                    name: {
+                        EQ: name,
+                    },
+                    status: 'ATTRIBUTE_EXISTS',
+                },
+            },
+            limit: limit ? +limit : undefined,
+            cursor: queryCursor,
+            orderBy: QUERY_ORDER.ASC
+        });
+
+        return this.ok(pageOfExamples);
     }
 }

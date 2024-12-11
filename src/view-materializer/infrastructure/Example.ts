@@ -1,7 +1,8 @@
 import {Attribute, Entity, AutoGenerateAttribute, INDEX_TYPE} from '@typedorm/common';
 import {AUTO_GENERATE_ATTRIBUTE_STRATEGY} from '@typedorm/common';
+import { PartitionMetadata } from './PartitionMetadata';
 
-@Entity({
+export const ExampleMetadata: PartitionMetadata<Example> = {
   name: 'example',
   primaryKey: {
     partitionKey: 'EXAMPLE#{{userId}}',
@@ -20,7 +21,9 @@ import {AUTO_GENERATE_ATTRIBUTE_STRATEGY} from '@typedorm/common';
       type: INDEX_TYPE.LSI,
     },
   },
-})
+};
+
+@Entity(ExampleMetadata)
 export class Example {
   @Attribute()
   id!: string;

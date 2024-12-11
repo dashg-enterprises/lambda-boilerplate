@@ -1,6 +1,7 @@
-interface Paginated<T = object[]> {
+export interface Paginated<T = object[]> {
     results: T[];
-    page: number;
-    pageSize: number;
+    cursor: number;
+    resultsPerPage: number;
     totalPages: number;
+    totalResults: number;
 }
