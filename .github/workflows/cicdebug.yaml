@@ -1,23 +1,15 @@
-name: CI Build Step - Deploy Zip to S3
+name: CI CD Debug - Build Debug Image and Deploy to dev
 
 on: 
-  workflow_dispatch:
-    inputs:
-      command:
-        description: "The command to run"
-        required: true
-        default: "apply"
-        type: choice
-        options:
-          - apply
-          - destroy
-          
+  workflow_dispatch
+
 env:
   AWS_REGION: us-east-1              
   S3_REPOSITORY: examplecontext-builds
   GIT_ORGANIZATION_NAME: dashg-enterprises
   LAMBDAS: ( "command-handler" "view-materializer" "view-api" )
   TG_INIT_DIR: 'live/aws/_initializations/lambda-boilerplate'
+  TG_DEV_APP_DIR: 'live/aws/dev/applications/lambda-boilerplate'
   TG_INIT_SOURCE: '../../../../..//iac/initialization'
   TG_APP_SOURCE: '../../../../../..//iac'
 
@@ -44,12 +36,30 @@ jobs:
           S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
           TG_SOURCE: ${{ env.TG_INIT_SOURCE }}
           TG_DIR: ${{ env.TG_INIT_DIR }}
-          TG_COMMAND: ${{ inputs.command }}
+          BUILD_MODE: debug
+      
+  deploy-dev:
+    if: ${{ inputs.dev }}
+    needs: build
+    name: Deploy to Dev
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/workflows/actions/commit-build-to-cloud-deployment
-        if: ${{ inputs.command != 'destroy' }}
         with: 
           CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
           TG_APP_DIR: ${{ env.TG_DEV_APP_DIR }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
           LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
           S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
+      - uses: ./.github/workflows/actions/cd
+        with: 
+          CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
+          DASHG_CLOUD_PLATFORM_PAT: ${{ secrets.DASHG_CLOUD_PLATFORM_PAT }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
+          TG_SOURCE: ${{ env.TG_APP_SOURCE }}
+          TG_DIR: ${{ env.TG_DEV_APP_DIR }}

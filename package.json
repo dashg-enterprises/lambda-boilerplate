@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "rm -rf out",
-    "build-dev": "node ./esbuild.config.mjs local",
-    "build": "node ./esbuild.config.mjs prod",
+    "build": "node ./esbuild.config.mjs",
     "postbuild": "cd out && zip index.zip index.js",
     "postbuild-windows": "cd out && tar -a -cf index.zip index.js*"
   },
