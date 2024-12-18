@@ -39,7 +39,6 @@ jobs:
           BUILD_MODE: debug
       
   deploy-dev:
-    if: ${{ inputs.dev }}
     needs: build
     name: Deploy to Dev
     runs-on: ubuntu-latest
