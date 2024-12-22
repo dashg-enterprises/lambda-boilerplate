@@ -46,7 +46,7 @@ export default class ExampleController extends LambdaControllerBase implements I
             soryKey: cursorSortKey
         };
 
-        const pageOfExamples = await this.repo.page({ userId }, {
+        const queryForPage = {
             queryIndex: 'GSI1',
             keyCondition: {
                 BEGINS_WITH: `EXAMPLE#${userId}#STATUS#${status}`,
@@ -67,7 +67,12 @@ export default class ExampleController extends LambdaControllerBase implements I
             limit: limit ? +limit : undefined,
             cursor: queryCursor,
             orderBy: QUERY_ORDER.ASC
-        });
+        };
+
+        console.log("Query for page:")
+        console.log(JSON.stringify(queryForPage, null, 2))
+
+        const pageOfExamples = await this.repo.page({ userId, status } as any, queryForPage);
 
         return this.ok(pageOfExamples);
     }
