@@ -21,7 +21,8 @@ async function lambdaBuilder(
     platform: 'node',
     target: 'es2020',
     sourcemap: isDebug,
-    // minify: isRelease,
+    packages: isDebug ? "external" : "bundle",
+    minify: isRelease,
     bundle: isRelease,
     plugins: [
       esbuildDecorators({
