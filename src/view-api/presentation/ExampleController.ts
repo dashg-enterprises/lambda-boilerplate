@@ -49,17 +49,19 @@ export default class ExampleController extends LambdaControllerBase implements I
         const pageOfExamples = await this.repo.page({ userId }, {
             queryIndex: 'GSI1',
             keyCondition: {
-                BEGINS_WITH: `EXAMPLE#${userId}#${status}`,
+                BEGINS_WITH: `EXAMPLE#${userId}#STATUS#${status}`,
             },
             where: {
                 AND: {
                     // age: {
                     //     BETWEEN: [1, 5],
                     // },
-                    name: {
+                    name: !name ? undefined : {
                         EQ: name,
                     },
-                    status: 'ATTRIBUTE_EXISTS',
+                    // status: {
+                    //     EQ: status,
+                    // },
                 },
             },
             limit: limit ? +limit : undefined,
