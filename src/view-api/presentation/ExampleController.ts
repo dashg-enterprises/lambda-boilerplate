@@ -75,8 +75,12 @@ export default class ExampleController extends LambdaControllerBase implements I
         console.log("Query for page:")
         console.log(JSON.stringify(queryForPage, null, 2))
 
-        const pageOfExamples = await this.repo.page({ userId, status: status || undefined } as any, queryForPage);
-
-        return this.ok(pageOfExamples);
+        if (status) {
+            const pageOfExamples = await this.repo.page({ userId, status: status || undefined } as any, queryForPage);
+            return this.ok(pageOfExamples);
+        } else {
+            const examples = await this.repo.find({ userId });
+            return this.ok(examples);
+        }
     }
 }
