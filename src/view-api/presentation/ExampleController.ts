@@ -41,7 +41,7 @@ export default class ExampleController extends LambdaControllerBase implements I
 
         const [ cursorPartitionKey, cursorSortKey ] = cursor?.split(":") || [];
 
-        const queryCursor = {
+        const queryCursor = cursor && {
             partitionKey: cursorPartitionKey,
             soryKey: cursorSortKey
         };
@@ -65,7 +65,7 @@ export default class ExampleController extends LambdaControllerBase implements I
                 },
             },
             limit: limit ? +limit : undefined,
-            cursor: queryCursor,
+            cursor: queryCursor || undefined,
             orderBy: QUERY_ORDER.ASC
         };
 
