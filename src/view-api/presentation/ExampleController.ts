@@ -43,7 +43,7 @@ export default class ExampleController extends LambdaControllerBase implements I
 
         const queryCursor = cursor && {
             partitionKey: cursorPartitionKey,
-            soryKey: cursorSortKey
+            sortKey: cursorSortKey
         };
 
         const queryForPage = {

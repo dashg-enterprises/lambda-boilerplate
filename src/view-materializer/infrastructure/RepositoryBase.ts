@@ -38,12 +38,12 @@ export abstract class RepositoryBase<
     }
 
     async page(byKey: TPartitionKey, withOptions: EntityManagerFindOptions<TEntity, string | Partial<EntityAttributes<TEntity>>> | undefined): Promise<Paginated<TEntity>> {
-        if (!withOptions?.limit || !withOptions.cursor) throw new Error("limit and cursor are required for pagination")
+        if (!withOptions?.limit) throw new Error("limit is required for pagination")
         const count = await this.entityManager.count<TEntity>(this.MaterializedView, byKey as Partial<TEntity>, withOptions);
         const result = await this.entityManager.find<TEntity>(this.MaterializedView, byKey as Partial<TEntity>, withOptions);
         return {
             results: result.items, 
-            cursor: result.cursor?.partitionKey + result.cursor?.partitionKey, 
+            cursor: result.cursor?.partitionKey + result.cursor?.sortKey, 
             resultsPerPage: withOptions?.limit,
             totalPages: count / withOptions.limit,
             totalResults: count
