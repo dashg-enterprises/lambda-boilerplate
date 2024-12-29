@@ -46,10 +46,13 @@ export default class ExampleController extends LambdaControllerBase implements I
             sortKey: cursorSortKey
         };
 
+        let keyQuery = `EXAMPLE#${userId}`;
+        if (status) keyQuery += `#STATUS#${status}`;
+
         const queryForPage = {
-            queryIndex: 'GSI1',
+            queryIndex: status ? 'GSI1' : undefined,
             keyCondition: {
-                BEGINS_WITH: `EXAMPLE#${userId}#STATUS#${status}`,
+                BEGINS_WITH: keyQuery
             },
             where: !name ? undefined : {
                 AND: {
@@ -72,7 +75,7 @@ export default class ExampleController extends LambdaControllerBase implements I
         console.log("Query for page:")
         console.log(JSON.stringify(queryForPage, null, 2))
 
-        const pageOfExamples = await this.repo.page({ userId, status } as any, queryForPage);
+        const pageOfExamples = await this.repo.page({ userId, status: status || undefined } as any, queryForPage);
 
         return this.ok(pageOfExamples);
     }
