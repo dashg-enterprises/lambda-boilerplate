@@ -51,7 +51,7 @@ export default class ExampleController extends LambdaControllerBase implements I
             keyCondition: {
                 BEGINS_WITH: `EXAMPLE#${userId}#STATUS#${status}`,
             },
-            where: {
+            where: !name ? undefined : {
                 AND: {
                     // age: {
                     //     BETWEEN: [1, 5],
