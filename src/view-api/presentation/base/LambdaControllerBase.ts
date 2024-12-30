@@ -1,35 +1,35 @@
-import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
+import { APIGatewayEvent, APIGatewayProxyResultV2 } from "aws-lambda";
 import { IControllerBase } from "./IControllerBase";
 
 export abstract class LambdaControllerBase implements IControllerBase {
-    public abstract getById(req: APIGatewayEvent): Promise<APIGatewayProxyResult>;
-    public abstract get(req: APIGatewayEvent): Promise<APIGatewayProxyResult>;
+    public abstract getById(req: APIGatewayEvent): Promise<APIGatewayProxyResultV2<object>>;
+    public abstract get(req: APIGatewayEvent): Promise<APIGatewayProxyResultV2<object>>;
 
-    public pathNotFound(path: string): APIGatewayProxyResult {
+    public pathNotFound(path: string): APIGatewayProxyResultV2<object> {
         return {
             statusCode: 404,
-            body: JSON.stringify({ error: `Path '${path}' not found` }),
+            body: { error: `Path '${path}' not found` },
         };
     }
 
-    protected ok(payload: object): APIGatewayProxyResult {
+    protected ok(payload: object): APIGatewayProxyResultV2<object> {
         return {
             statusCode: 200,
-            body: JSON.stringify(payload),
+            body: payload,
         };
     }
 
-    protected badRequest(message: string): APIGatewayProxyResult {
+    protected badRequest(message: string): APIGatewayProxyResultV2<object> {
         return {
             statusCode: 400,
-            body: JSON.stringify({ error: message }),
+            body: { error: message },
         };
     }
 
-    protected notFound(message: string): APIGatewayProxyResult {
+    protected notFound(message: string): APIGatewayProxyResultV2<object> {
         return {
             statusCode: 404,
-            body: JSON.stringify({ error: message }),
+            body: { error: message },
         };
     }
 }

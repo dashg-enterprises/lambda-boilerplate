@@ -1,8 +1,8 @@
-import { APIGatewayProxyResult, APIGatewayEvent } from "aws-lambda";
+import { APIGatewayEvent, APIGatewayProxyResultV2 } from "aws-lambda";
 
 
 export interface IControllerBase {
-    pathNotFound(path: string): APIGatewayProxyResult;
-    getById(req: APIGatewayEvent): Promise<APIGatewayProxyResult>;
-    get(req: APIGatewayEvent): Promise<APIGatewayProxyResult>;
+    pathNotFound(path: string): APIGatewayProxyResultV2<object>;
+    getById(req: APIGatewayEvent): Promise<APIGatewayProxyResultV2<object>>;
+    get(req: APIGatewayEvent): Promise<APIGatewayProxyResultV2<object>>;
 }
