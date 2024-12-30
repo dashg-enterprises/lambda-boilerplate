@@ -9,7 +9,7 @@ variable "build_bucket_name" {
 variable "handlers" {
   type = list(object({
     name = string
-    # command_source = string
+    handles_commands = optional(bool, false)
     event_sources = list(string)
     build_id = string
   }))
