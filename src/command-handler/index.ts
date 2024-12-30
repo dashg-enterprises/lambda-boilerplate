@@ -1,10 +1,12 @@
 import 'reflect-metadata'
 import { APIGatewayEvent, EventBridgeEvent, Handler, SQSEvent } from 'aws-lambda';
 import { CreateExample, CreateExampleCommand } from "./commands/CreateExample";
-import { Host, IDomainCommand, IDomainEvent, IHandler, Snapshot } from '@dashg-enterprises/ddd-platform';
+import { Host, ICommandPublisher, IDomainCommand, IDomainEvent, IHandler, PLATFORM_TYPES, Snapshot } from '@dashg-enterprises/ddd-platform';
 import { TYPES } from './TYPES';
 import { ICreateExampleHandler } from './application/CreateExampleHandler';
 import { host } from './inversify.config';
+import { ScheduleExample } from './commands/ScheduleExample';
+import { ExampledScheduled, ExampledScheduledEvent } from './events/ExampleScheduled';
 
 /*global handler @preserve*/
 export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = async (awsEvent, context) => {
@@ -22,10 +24,19 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
     try {
         switch (true) {
             case CreateExample.isTypeOf(command): {
+                const commandPublisher = host.get<ICommandPublisher>(PLATFORM_TYPES.ICommandPublisher);
+                await commandPublisher.publishDelayed(command, 30);
                 const createExampleHandler = host.get<ICreateExampleHandler>(TYPES.ICreateExampleHandler);
                 const result = await createExampleHandler.handle(command);
                 return responseFrom(result);
-            } default: {
+            }
+            case ScheduleExample.isTypeOf(command): {
+                const commandPublisher = host.get<ICommandPublisher>(PLATFORM_TYPES.ICommandPublisher);
+                const delayedCreateCommand = new CreateExample(new CreateExampleCommand("Delayed Example"));
+                await commandPublisher.publishDelayed(delayedCreateCommand, 30);
+                return responseFrom([new ExampledScheduled(new ExampledScheduledEvent("1234-delayed", "Delayed Example"), delayedCreateCommand), {}]);
+            }
+            default: {
                 const commandHandler = host.getHandler<IHandler<IDomainCommand>, IDomainCommand>(command);
                 const result = await commandHandler.handle(command);
                 return responseFrom(result);
