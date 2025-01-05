@@ -24,8 +24,6 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
     try {
         switch (true) {
             case CreateExample.isTypeOf(command): {
-                const commandPublisher = host.get<ICommandPublisher>(PLATFORM_TYPES.ICommandPublisher);
-                await commandPublisher.publishDelayed(command, 30);
                 const createExampleHandler = host.get<ICreateExampleHandler>(TYPES.ICreateExampleHandler);
                 const result = await createExampleHandler.handle(command);
                 return responseFrom(result);
@@ -33,7 +31,7 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
             case ScheduleExample.isTypeOf(command): {
                 const commandPublisher = host.get<ICommandPublisher>(PLATFORM_TYPES.ICommandPublisher);
                 const delayedCreateCommand = new CreateExample(new CreateExampleCommand("Delayed Example"));
-                await commandPublisher.publishDelayed(delayedCreateCommand, 30);
+                await commandPublisher.publishDelayed(delayedCreateCommand, command.command.nextRunInSeconds);
                 return responseFrom([new ExampledScheduled(new ExampledScheduledEvent("1234-delayed", "Delayed Example"), delayedCreateCommand), {}]);
             }
             default: {

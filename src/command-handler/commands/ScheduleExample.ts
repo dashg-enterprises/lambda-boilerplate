@@ -1,8 +1,10 @@
 import { CommandMetadata, DomainCommand, IDomainCommand } from "@dashg-enterprises/ddd-platform";
 
 export class ScheduleExampleCommand {
+    nextRunInSeconds: number; 
     name: string;
-    constructor(name: string){
+    constructor(nextRunInSeconds: number, name: string){
+        this.nextRunInSeconds = nextRunInSeconds;
         this.name = name;
     }
 }
