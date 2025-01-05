@@ -9,6 +9,10 @@ export class CreateExampleCommand {
 
 export class CreateExample extends DomainCommand<CreateExampleCommand> {
     static isTypeOf = (command: IDomainCommand): command is CreateExample => {
+        console.log("uh-oh here we go");
+        console.log(command);
+        console.log("static metadata");
+        console.log(CreateExample.metadata);
         return command.metadata.type == CreateExample.metadata.type;
     }
 

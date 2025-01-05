@@ -11,6 +11,10 @@ export class ScheduleExampleCommand {
 
 export class ScheduleExample extends DomainCommand<ScheduleExampleCommand> {
     static isTypeOf = (command: IDomainCommand): command is ScheduleExample => {
+        console.log("uh-oh here we go");
+        console.log(command);
+        console.log("static metadata");
+        console.log(ScheduleExample.metadata);
         return command.metadata.type == ScheduleExample.metadata.type;
     }
 
