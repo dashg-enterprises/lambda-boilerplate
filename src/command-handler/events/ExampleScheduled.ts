@@ -1,7 +1,7 @@
 import { DomainEvent, EventMetadata, IDomainEvent } from "@dashg-enterprises/ddd-platform";
 import { CreateExample } from "../commands/CreateExample";
 
-export class ExampledScheduledEvent {
+export class ExampleScheduledEvent {
     exampleId: string;
     name: string;
     constructor(exampleId: string, name: string) {
@@ -12,20 +12,20 @@ export class ExampledScheduledEvent {
 
 type ConcreteMetadata = Pick<EventMetadata, 'aggregateId' | 'correlationId' | 'cause'>;
 
-export class ExampledScheduled extends DomainEvent<ExampledScheduledEvent> {
-    static isTypeOf = (event: IDomainEvent): event is ExampledScheduled => {
-        return event.metadata.type == ExampledScheduled.metadata.type;
+export class ExampleScheduled extends DomainEvent<ExampleScheduledEvent> {
+    static isTypeOf = (event: IDomainEvent): event is ExampleScheduled => {
+        return event.metadata.type == ExampleScheduled.metadata.type;
     }
 
     static metadata = {
-        type: "ExampledScheduled",
+        type: "ExampleScheduled",
         context: "ExampleContext",
         aggregate: "Example",
     };
 
-    constructor(event: ExampledScheduledEvent, cause: CreateExample) {
+    constructor(event: ExampleScheduledEvent, cause: CreateExample) {
         super(event, new EventMetadata({
-            ...ExampledScheduled.metadata,
+            ...ExampleScheduled.metadata,
             cause
         }));
     }

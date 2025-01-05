@@ -1,0 +1,30 @@
+import { CustomHandlerBase, HandlerBase, IAggregateService, IAggregateServiceUtilities, IDomainEvent, IHandler, PLATFORM_TYPES, Snapshot } from "@dashg-enterprises/ddd-platform";
+import { CreateExample, CreateExampleCommand } from "../commands/CreateExample";
+import { inject } from "inversify";
+import { ScheduleExample } from "../commands/ScheduleExample";
+import { Example } from "../domain/Example";
+import { ExampleScheduled, ExampleScheduledEvent } from "../events/ExampleScheduled";
+
+export interface IScheduleExampleHandler extends IHandler<ScheduleExample> {
+}
+
+export class ScheduleExampleHandler extends CustomHandlerBase<Example, ScheduleExample> implements IScheduleExampleHandler {
+    constructor(@inject(PLATFORM_TYPES.IAggregateServiceUtilities) utilities: IAggregateServiceUtilities<Example>) {
+        super(utilities);
+    }
+    async handle(scheduleExample: ScheduleExample): Promise<[IDomainEvent, Snapshot]> {
+        const delayedCreateExample = new CreateExample(new CreateExampleCommand(scheduleExample.command.name));
+        await this.utilities.issue(delayedCreateExample, scheduleExample.command.nextRunInSeconds);
+        const exampleScheduled = new ExampleScheduled(
+            new ExampleScheduledEvent(
+                `delayed-${delayedCreateExample.correlationId}`,
+                delayedCreateExample.command.name
+            ),
+            scheduleExample
+        );
+        return [
+            exampleScheduled,
+            {} // no aggregate created yet!
+        ];
+    }
+}
