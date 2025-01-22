@@ -10,7 +10,7 @@ variable "handlers" {
   type = list(object({
     name = string
     handles_commands = optional(bool, false)
-    event_sources = list(string)
+    event_sources = optional(list(string), [])
     build_id = string
   }))
 }
