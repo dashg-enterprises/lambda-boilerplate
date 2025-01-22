@@ -4,6 +4,9 @@ outputs:
   lambda_builds_map:
     description: "Application build images as output from CI" 
     value: ${{ steps.build-step.outputs.lambda_builds_map }}
+  s3_repository:
+    description: "Build repository (S3 Bucket) where the Lambda zips are stored" 
+    value: ${{ steps.tg_ci_output.outputs.tg_action_output }}
 inputs:
   CLOUD_DEPLOYMENT_PAT:
     description: 'PAT to checkout cloud-deployment'
@@ -82,6 +85,21 @@ runs:
         tg_dir: ${{ inputs.TG_LOCAL_PATH }}/${{ inputs.TG_DIR }}
         tg_command: '${{ inputs.TG_COMMAND }} --terragrunt-source ${{ inputs.TG_SOURCE }}'
 
+    - name: Yield raw output
+      if: ${{ inputs.TG_COMMAND != 'destroy' }}
+      id: tg_ci_output
+      uses: gruntwork-io/terragrunt-action@v2
+      env:
+        INPUT_PRE_EXEC_1: |
+          git config --global url."https://user:${{inputs.DASHG_CLOUD_PLATFORM_PAT}}@github.com/dashg-enterprises/cloud-platform".insteadOf "https://github.com/dashg-enterprises/cloud-platform"
+        INPUT_PRE_EXEC_2: |
+          git config --global url."https://user:${{inputs.CLOUD_DEPLOYMENT_PAT}}@github.com".insteadOf "https://github.com"
+      with:
+        TF_VERSION: ${{ inputs.TF_VERSION }}
+        TG_VERSION: ${{ inputs.TG_VERSION }}
+        tg_dir: ${{ inputs.TG_LOCAL_PATH }}/${{ inputs.TG_DIR }}
+        tg_command: 'output -raw ecr_name --terragrunt-source ${{ inputs.TG_SOURCE }}'
+
     - name: Deploy build to bucket
       if: ${{ inputs.TG_COMMAND != 'destroy' }}
       id: build-step
@@ -96,7 +114,7 @@ runs:
             npm run build -- ${{ inputs.BUILD_MODE }} src/$lambda/index.ts;
             baseBuildId="${{ github.ref_name }}__${lambda}__${{ github.sha }}.zip";
             buildId=$(echo $baseBuildId | tr '/' '_');
-            aws s3 cp out/index.zip s3://${{ inputs.S3_REPOSITORY }}/$buildId;
+            aws s3 cp out/index.zip s3://${{ steps.tg_ci_output.outputs.tg_action_output }}/$buildId;
             lambda_builds_map[$lambda]=$buildId;
             echo $buildId;
         done;

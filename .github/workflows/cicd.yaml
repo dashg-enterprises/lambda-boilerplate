@@ -21,13 +21,12 @@ on:
 
 env:
   AWS_REGION: us-east-1              
-  S3_REPOSITORY: examplecontext-builds
-  GIT_ORGANIZATION_NAME: dashg-enterprises
+  GIT_ORGANIZATION_NAME: ${{ github.repository_owner }}
   LAMBDAS: ( "command-handler" "view-materializer" "view-api" )
-  TG_INIT_DIR: 'live/aws/_initializations/lambda-boilerplate'
-  TG_DEV_APP_DIR: 'live/aws/dev/applications/lambda-boilerplate'
-  TG_UAT_APP_DIR: 'live/aws/uat/applications/lambda-boilerplate'
-  TG_PROD_APP_DIR: 'live/aws/prod/applications/lambda-boilerplate'
+  TG_INIT_DIR: 'live/aws/_initializations/${{ github.event.repository.name }}'
+  TG_DEV_APP_DIR: 'live/aws/dev/applications/${{ github.event.repository.name }}'
+  TG_UAT_APP_DIR: 'live/aws/uat/applications/${{ github.event.repository.name }}'
+  TG_PROD_APP_DIR: 'live/aws/prod/applications/${{ github.event.repository.name }}'
   TG_INIT_SOURCE: '../../../../..//iac/initialization'
   TG_APP_SOURCE: '../../../../../..//iac'
 
@@ -37,6 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       lambda_builds_map: ${{ steps.ci.outputs.lambda_builds_map }}
+      s3_repository: ${{ steps.ci.outputs.s3_repository }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/workflows/actions/ci
@@ -51,7 +51,6 @@ jobs:
           NPM_DDD_PLATFORM_ACCESS_TOKEN: ${{ secrets.NPM_DDD_PLATFORM_ACCESS_TOKEN }}
           LAMBDAS: ${{ env.LAMBDAS }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
-          S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
           TG_SOURCE: ${{ env.TG_INIT_SOURCE }}
           TG_DIR: ${{ env.TG_INIT_DIR }}
       
@@ -69,7 +68,7 @@ jobs:
           TG_APP_DIR: ${{ env.TG_DEV_APP_DIR }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
           LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
-          S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
+          S3_REPOSITORY: ${{ needs.build.outputs.s3_repository }}
       - uses: ./.github/workflows/actions/cd
         with: 
           CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
@@ -94,7 +93,7 @@ jobs:
           TG_APP_DIR: ${{ env.TG_UAT_APP_DIR }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
           LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
-          S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
+          S3_REPOSITORY: ${{ needs.build.outputs.s3_repository }}
       - uses: ./.github/workflows/actions/cd
         with: 
           CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
@@ -119,7 +118,7 @@ jobs:
           TG_APP_DIR: ${{ env.TG_PROD_APP_DIR }}
           GIT_ORGANIZATION_NAME: ${{ env.GIT_ORGANIZATION_NAME }}
           LAMBDA_BUILDS_MAP: ${{ needs.build.outputs.lambda_builds_map }}
-          S3_REPOSITORY: ${{ env.S3_REPOSITORY }}
+          S3_REPOSITORY: ${{ needs.build.outputs.s3_repository }}
       - uses: ./.github/workflows/actions/cd
         with: 
           CLOUD_DEPLOYMENT_PAT: ${{ secrets.CLOUD_DEPLOYMENT_PAT }}
