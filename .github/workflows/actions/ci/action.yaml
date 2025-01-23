@@ -98,7 +98,7 @@ runs:
         TF_VERSION: ${{ inputs.TF_VERSION }}
         TG_VERSION: ${{ inputs.TG_VERSION }}
         tg_dir: ${{ inputs.TG_LOCAL_PATH }}/${{ inputs.TG_DIR }}
-        tg_command: 'output -raw ecr_name --terragrunt-source ${{ inputs.TG_SOURCE }}'
+        tg_command: 'output -raw build_bucket_name --terragrunt-source ${{ inputs.TG_SOURCE }}'
 
     - name: Deploy build to bucket
       if: ${{ inputs.TG_COMMAND != 'destroy' }}
