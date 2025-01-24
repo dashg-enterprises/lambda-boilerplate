@@ -33,7 +33,7 @@ describe("A command handler", () => {
         expect(typeof commandHandler).toBe("function");
     });
     test('should respond with 200 for a valid command', async () => {
-        const command = new CreateExample(new CreateExampleCommand("It works!"));
+        const command = new CreateExample(new CreateExampleCommand("It works!", "1234-abcd"));
         const commandHandler = handler;
         
         const response = await commandHandler(asAWSEvent(command), {awsRequestId: ""} as any, () => {});

@@ -3,10 +3,14 @@ import { CreateExample } from "../commands/CreateExample";
 
 export class ExampleCreatedEvent {
     exampleId: string;
+    userId: string;
     name: string;
-    constructor(exampleId: string, name: string) {
+    status: string;
+    constructor(exampleId: string, userId: string, name: string, status: string) {
         this.exampleId = exampleId;
+        this.userId = userId;
         this.name = name;
+        this.status = status;
     }
 }
 

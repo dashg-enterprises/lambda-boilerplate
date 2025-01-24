@@ -6,7 +6,7 @@ import { CreateExample, CreateExampleCommand } from '../../src/command-handler/c
 describe("An example", () => {
     test('should be created by a CreateExample command', () => {
         const example = new Example();
-        example.handle(new CreateExample(new CreateExampleCommand("test")));
+        example.handle(new CreateExample(new CreateExampleCommand("test", "1234-abcd")));
         expect(example.getName()).toBe("test");
     });
 });

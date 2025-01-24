@@ -2,12 +2,12 @@ import { CommandMetadata, DomainCommand, IDomainCommand } from "@dashg-enterpris
 
 export class UpdateExampleCommand {
     exampleId: string;
+    userId: string;
     name: string;
-    status: string;
-    constructor(exampleId: string, name: string, status: 'hidden' | 'visible'){
+    constructor(exampleId: string, userId: string, name: string){
         this.exampleId = exampleId;
         this.name = name;
-        this.status = status;
+        this.userId = userId;
     }
 }
 

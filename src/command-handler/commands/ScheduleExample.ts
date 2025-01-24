@@ -2,21 +2,18 @@ import { CommandMetadata, DomainCommand, IDomainCommand } from "@dashg-enterpris
 
 export class ScheduleExampleCommand {
     nextRunInSeconds: number; 
+    userId: string;
     name: string;
-    constructor(nextRunInSeconds: number, name: string){
+    constructor(nextRunInSeconds: number, userId: string, name: string){
         this.nextRunInSeconds = nextRunInSeconds;
+        this.userId = userId;
         this.name = name;
     }
 }
 
 export class ScheduleExample extends DomainCommand<ScheduleExampleCommand> {
-    static isTypeOf = (command: IDomainCommand): command is ScheduleExample => {
-        console.log("uh-oh here we go");
-        console.log(command);
-        console.log("static metadata");
-        console.log(ScheduleExample.metadata);
-        return command.metadata.type == ScheduleExample.metadata.type;
-    }
+    static isTypeOf = (command: IDomainCommand): command is ScheduleExample => 
+        command.metadata.type == ScheduleExample.metadata.type;
 
     static metadata = new CommandMetadata({
         type: "ScheduleExample",

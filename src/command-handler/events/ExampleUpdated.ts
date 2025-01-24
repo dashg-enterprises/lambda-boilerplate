@@ -2,7 +2,16 @@ import { DomainEvent, EventMetadata, IDomainEvent } from "@dashg-enterprises/ddd
 import { UpdateExample } from "../commands/UpdateExample";
 
 export class ExampleUpdatedEvent {
-
+    exampleId: string;
+    userId: string;
+    name: string;
+    status: string;
+    constructor(exampleId: string, userId: string, name: string, status: string) {
+        this.exampleId = exampleId;
+        this.userId = userId;
+        this.name = name;
+        this.status = status;
+    }
 }
 
 export class ExampleUpdated extends DomainEvent<ExampleUpdatedEvent> {
@@ -16,7 +25,7 @@ export class ExampleUpdated extends DomainEvent<ExampleUpdatedEvent> {
         aggregate: "Example",
     };
 
-    constructor(event: ExampleUpdated, cause: UpdateExample) {
+    constructor(event: ExampleUpdatedEvent, cause: UpdateExample) {
         super(event, new EventMetadata({
             type: "ExampleUpdated",
             context: "ExampleContext",

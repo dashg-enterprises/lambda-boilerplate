@@ -1,21 +1,25 @@
 import 'reflect-metadata';
-import { APIGatewayProxyResult, APIGatewayEvent, Handler } from 'aws-lambda';
+import { APIGatewayProxyResult, APIGatewayEvent, Handler, SQSEvent } from 'aws-lambda';
 import { host } from './inversify.config';
 import { TYPES } from './TYPES';
 import { IExampleRepository } from './infrastructure/IExampleRepository';
 import { Example } from './infrastructure/Example';
+import { ExampleCreated } from '../command-handler/events/ExampleCreated';
 
 /*global handler @preserve*/
-export const handler: Handler<APIGatewayEvent> = async (event, context): Promise<APIGatewayProxyResult> => {
-    console.log(`Event: ${JSON.stringify(event, null, 2)}`);
+export const handler: Handler<SQSEvent & APIGatewayEvent> = async (awsEvent, context): Promise<APIGatewayProxyResult> => {
+    console.log(`Event: ${JSON.stringify(awsEvent, null, 2)}`);
     console.log(`Context: ${JSON.stringify(context, null, 2)}`);
-    if (!event.body) throw new Error("Body required");
-    const snapshot = JSON.parse(event.body) as Example;
+    if (!awsEvent.body) throw new Error("Body required");
+    const rawDomainEvent = awsEvent.body ?? awsEvent.Records[0].body;
+    const exampleCreated = JSON.parse(rawDomainEvent) as ExampleCreated;
+
     const newExample = new Example();
-    newExample.id = snapshot.id;
-    newExample.name = snapshot.name;
-    newExample.userId = snapshot.userId;
-    newExample.status = snapshot.status;
+    newExample.id = exampleCreated.event.exampleId;
+    newExample.name = exampleCreated.event.name;
+    newExample.userId = exampleCreated.event.userId;
+    newExample.status = exampleCreated.event.status;
+    
     const exampleRepo = host.get<IExampleRepository>(TYPES.IExampleRepository);
     const createdExample = await exampleRepo.create(newExample);
     

@@ -13,7 +13,7 @@ export class ScheduleExampleHandler extends CustomHandlerBase<Example, ScheduleE
         super(utilities);
     }
     async handle(scheduleExample: ScheduleExample): Promise<[IDomainEvent, Snapshot]> {
-        const delayedCreateExample = new CreateExample(new CreateExampleCommand(scheduleExample.command.name));
+        const delayedCreateExample = new CreateExample(new CreateExampleCommand(scheduleExample.command.name, scheduleExample.command.userId));
         await this.utilities.issue(delayedCreateExample, scheduleExample.command.nextRunInSeconds);
         const exampleScheduled = new ExampleScheduled(
             new ExampleScheduledEvent(
