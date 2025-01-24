@@ -7,16 +7,24 @@ import { ICreateExampleHandler } from './application/CreateExampleHandler';
 import { host } from './inversify.config';
 import { ScheduleExample } from './commands/ScheduleExample';
 import { IScheduleExampleHandler } from './application/ScheduleExampleHandler';
+import { UpdateExample } from './commands/UpdateExample';
 
 /*global handler @preserve*/
 export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = async (awsEvent, context) => {
-    console.log('EVENT: \n' + JSON.stringify(awsEvent, null, 2));
-    const command = JSON.parse(awsEvent.Records[0].body) as IDomainCommand;
-    console.log("-------------command----------------");
-    console.log(JSON.stringify(command));
-    console.log("-------------container--------------");
-    console.log(host.eject());
-    console.log("------------------------------------");
+    let command: IDomainCommand;
+    try {
+        console.log('EVENT: \n' + JSON.stringify(awsEvent, null, 2));
+        const rawCommand = awsEvent.body ?? awsEvent.Records[0].body;
+        command = JSON.parse(rawCommand) as IDomainCommand;
+
+        console.log("-------------command----------------");
+        console.log(JSON.stringify(command));
+        console.log("-------------container--------------");
+        console.log(host.eject());
+        console.log("------------------------------------");
+    } catch(e: unknown) {
+        return badRequest(e as Error);
+    }
 
     // const commandHandler = host.getNamedHandler(command);
     // const whatHappened = await commandHandler.handle(command);
@@ -28,11 +36,6 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
                 const result = await createExampleHandler.handle(command);
                 return responseFrom(result);
             }
-            case ScheduleExample.isTypeOf(command): {
-                const scheduleExampleHandler = host.get<IScheduleExampleHandler>(TYPES.IScheduleExampleHandler);
-                const result = await scheduleExampleHandler.handle(command);
-                return responseFrom(result);
-            }
             default: {
                 const commandHandler = host.getHandler<IHandler<IDomainCommand>, IDomainCommand>(command);
                 const result = await commandHandler.handle(command);
@@ -41,7 +44,7 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
         }
     } catch (e) {
         console.error(e);
-        return errorFrom(command);
+        return notFound(command);
     }
 };
 
@@ -55,29 +58,37 @@ export interface LambdaResponse {
 
 function responseFrom(whatHappened: [IDomainEvent, Snapshot]): LambdaResponse {
     const [domainEvent, snapshot] = whatHappened;
-    return {
-        isBase64Encoded: false,
-        statusCode: 200,
-        headers: {},
-        multiValueHeaders: {},
-        body: JSON.stringify({
-            domainEvent,
-            snapshot
-        })
-    };
+    return createResponse(200, {
+        domainEvent,
+        snapshot
+    });
 }
 
-function errorFrom(command: IDomainCommand, message?: string): LambdaResponse {
+function notFound(command: IDomainCommand, message?: string): LambdaResponse {
+    return createResponse(404, {
+        error: {
+            message: message || `Handler not found for ${command.metadata.type}`
+        },
+        command
+    });
+}
+
+function badRequest(error: Error): LambdaResponse {
+    return createResponse(400, {
+        error: {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        }
+    });
+}
+
+function createResponse(status: number, body: object): LambdaResponse {
     return {
         isBase64Encoded: false,
-        statusCode: 500,
+        statusCode: status,
         headers: {},
         multiValueHeaders: {},
-        body: JSON.stringify({
-            error: {
-                message: message || `No handler registered for ${command.metadata.type}`
-            },
-            command
-        })
+        body: JSON.stringify(body)
     };
 }
