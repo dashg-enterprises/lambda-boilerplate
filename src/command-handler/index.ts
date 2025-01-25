@@ -8,6 +8,7 @@ import { host } from './inversify.config';
 import { ScheduleExample } from './commands/ScheduleExample';
 import { IScheduleExampleHandler } from './application/ScheduleExampleHandler';
 import { UpdateExample } from './commands/UpdateExample';
+import { LambdaResponse, badRequest, responseFrom, notFound } from './infrastructure/LambdaResponse';
 
 /*global handler @preserve*/
 export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = async (awsEvent, context) => {
@@ -47,48 +48,3 @@ export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = asyn
         return notFound(command);
     }
 };
-
-export interface LambdaResponse {
-    isBase64Encoded: boolean,
-    statusCode: number,
-    headers: object,
-    multiValueHeaders: object,
-    body: string
-};
-
-function responseFrom(whatHappened: [IDomainEvent, Snapshot]): LambdaResponse {
-    const [domainEvent, snapshot] = whatHappened;
-    return createResponse(200, {
-        domainEvent,
-        snapshot
-    });
-}
-
-function notFound(command: IDomainCommand, message?: string): LambdaResponse {
-    return createResponse(404, {
-        error: {
-            message: message || `Handler not found for ${command.metadata.type}`
-        },
-        command
-    });
-}
-
-function badRequest(error: Error): LambdaResponse {
-    return createResponse(400, {
-        error: {
-            message: error.message,
-            stack: error.stack,
-            name: error.name
-        }
-    });
-}
-
-function createResponse(status: number, body: object): LambdaResponse {
-    return {
-        isBase64Encoded: false,
-        statusCode: status,
-        headers: {},
-        multiValueHeaders: {},
-        body: JSON.stringify(body)
-    };
-}

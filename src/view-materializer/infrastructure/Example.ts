@@ -34,7 +34,7 @@ export class Example {
   @AutoGenerateAttribute({
     strategy: AUTO_GENERATE_ATTRIBUTE_STRATEGY.UUID4,
   })
-  snapshotId!: string;
+  materializationId!: string;
 
   @Attribute()
   name!: string;

@@ -5,28 +5,41 @@ import { TYPES } from './TYPES';
 import { IExampleRepository } from './infrastructure/IExampleRepository';
 import { Example } from './infrastructure/Example';
 import { ExampleCreated } from '../command-handler/events/ExampleCreated';
+import { IDomainEvent } from '@dashg-enterprises/ddd-platform';
+import { createResponse, LambdaResponse, materializerNotFound, notFound } from '../command-handler/infrastructure/LambdaResponse';
+
+function responseFrom(example: Example) {
+    return createResponse(200, example);
+}
 
 /*global handler @preserve*/
-export const handler: Handler<SQSEvent & APIGatewayEvent> = async (awsEvent, context): Promise<APIGatewayProxyResult> => {
+export const handler: Handler<SQSEvent> = async (awsEvent, context): Promise<LambdaResponse> => {
     console.log(`Event: ${JSON.stringify(awsEvent, null, 2)}`);
     console.log(`Context: ${JSON.stringify(context, null, 2)}`);
-    if (!awsEvent.body) throw new Error("Body required");
-    const rawDomainEvent = awsEvent.body ?? awsEvent.Records[0].body;
-    const exampleCreated = JSON.parse(rawDomainEvent) as ExampleCreated;
+    const rawDomainEvent = awsEvent.Records[0].body;
+    const domainEvent = JSON.parse(rawDomainEvent) as IDomainEvent;
 
-    const newExample = new Example();
-    newExample.id = exampleCreated.event.exampleId;
-    newExample.name = exampleCreated.event.name;
-    newExample.userId = exampleCreated.event.userId;
-    newExample.status = exampleCreated.event.status;
-    
-    const exampleRepo = host.get<IExampleRepository>(TYPES.IExampleRepository);
-    const createdExample = await exampleRepo.create(newExample);
-    
-    return {
-        statusCode: 200,
-        body: JSON.stringify({
-            message: createdExample,
-        }),
-    };
+    try {
+        switch (true) {
+            case ExampleCreated.isTypeOf(domainEvent): {
+                const exampleCreated: ExampleCreated = domainEvent;
+                
+                const newExample = new Example();
+                newExample.id = exampleCreated.event.exampleId;
+                newExample.name = exampleCreated.event.name;
+                newExample.userId = exampleCreated.event.userId;
+                newExample.status = exampleCreated.event.status;
+
+                const exampleRepo = host.get<IExampleRepository>(TYPES.IExampleRepository);
+                const createdExample = await exampleRepo.create(newExample);
+                return responseFrom(createdExample);
+            }
+            default: {
+                throw new Error("Event not materialized");
+            }
+        }
+    } catch (e) {
+        console.error(e);
+        return materializerNotFound(domainEvent);
+    }
 };
