@@ -1,4 +1,4 @@
-import { CustomHandlerBase, HandlerBase, IAggregateService, IAggregateServiceUtilities, IDomainEvent, IHandler, PLATFORM_TYPES, Snapshot } from "@dashg-enterprises/ddd-platform";
+import { CustomHandlerBase, HandlerBase, IAggregateService, IAggregateServiceUtilities, IDomainEvent, IHandler, PLATFORM_TYPES, ISnapshot } from "@dashg-enterprises/ddd-platform";
 import { CreateExample, CreateExampleCommand } from "../commands/CreateExample";
 import { inject } from "inversify";
 import { ScheduleExample } from "../commands/ScheduleExample";
@@ -12,7 +12,7 @@ export class ScheduleExampleHandler extends CustomHandlerBase<Example, ScheduleE
     constructor(@inject(PLATFORM_TYPES.IAggregateServiceUtilities) utilities: IAggregateServiceUtilities<Example>) {
         super(utilities);
     }
-    async handle(scheduleExample: ScheduleExample): Promise<[IDomainEvent, Snapshot]> {
+    async handle(scheduleExample: ScheduleExample): Promise<[IDomainEvent, ISnapshot]> {
         const delayedCreateExample = new CreateExample(new CreateExampleCommand(scheduleExample.command.name, scheduleExample.command.userId));
         await this.utilities.issue(delayedCreateExample, scheduleExample.command.nextRunInSeconds);
         const exampleScheduled = new ExampleScheduled(

@@ -1,5 +1,6 @@
 import { DomainEvent, EventMetadata, IDomainEvent } from "@dashg-enterprises/ddd-platform";
 import { UpdateExample } from "../commands/UpdateExample";
+import { ExampleSnapshot } from "../contracts/ExampleSnapshot";
 
 export class ExampleUpdatedEvent {
     exampleId: string;
@@ -14,7 +15,7 @@ export class ExampleUpdatedEvent {
     }
 }
 
-export class ExampleUpdated extends DomainEvent<ExampleUpdatedEvent> {
+export class ExampleUpdated extends DomainEvent<ExampleUpdatedEvent, ExampleSnapshot> {
     static isTypeOf = (event: IDomainEvent): event is ExampleUpdated => {
         return event.metadata.type == ExampleUpdated.metadata.type;
     }

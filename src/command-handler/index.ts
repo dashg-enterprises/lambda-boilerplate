@@ -1,28 +1,20 @@
 import 'reflect-metadata'
-import { APIGatewayEvent, EventBridgeEvent, Handler, SQSEvent } from 'aws-lambda';
-import { CreateExample, CreateExampleCommand } from "./commands/CreateExample";
-import { Host, IDomainCommandPublisher, IDomainCommand, IDomainEvent, IHandler, PLATFORM_TYPES, Snapshot } from '@dashg-enterprises/ddd-platform';
+import { APIGatewayEvent, Handler, SQSEvent } from 'aws-lambda';
+import { CreateExample } from "./commands/CreateExample";
+import { IDomainCommand, IHandler } from '@dashg-enterprises/ddd-platform';
 import { TYPES } from './TYPES';
 import { ICreateExampleHandler } from './application/CreateExampleHandler';
 import { host } from './inversify.config';
-import { ScheduleExample } from './commands/ScheduleExample';
-import { IScheduleExampleHandler } from './application/ScheduleExampleHandler';
-import { UpdateExample } from './commands/UpdateExample';
 import { LambdaResponse, badRequest, responseFrom, notFound } from './infrastructure/LambdaResponse';
 
 /*global handler @preserve*/
 export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = async (awsEvent, context) => {
     let command: IDomainCommand;
     try {
-        console.log('EVENT: \n' + JSON.stringify(awsEvent, null, 2));
+        console.debug('EVENT: \n' + JSON.stringify(awsEvent, null, 2));
         const rawCommand = awsEvent.body ?? awsEvent.Records[0].body;
         command = JSON.parse(rawCommand) as IDomainCommand;
-
-        console.log("-------------command----------------");
-        console.log(JSON.stringify(command));
-        console.log("-------------container--------------");
-        console.log(host.eject());
-        console.log("------------------------------------");
+        console.debug(JSON.stringify(command));
     } catch(e: unknown) {
         return badRequest(e as Error);
     }

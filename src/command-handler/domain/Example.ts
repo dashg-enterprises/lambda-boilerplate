@@ -1,15 +1,16 @@
-import { Aggregate, EventLog } from "@dashg-enterprises/ddd-platform";
+import { Aggregate, EventLog, ISnapshot } from "@dashg-enterprises/ddd-platform";
 import { CreateExample } from "../commands/CreateExample";
 import { ExampleCreated, ExampleCreatedEvent } from "../events/ExampleCreated";
 import { ExampleUpdated } from "../events/ExampleUpdated";
-
-export enum ExampleStatus {
-    Active = "active",
-    Suspended = "suspended"
-}
+import { ExampleStatus } from "../contracts/ExampleStatus";
+import { ExampleSnapshot } from "../contracts/ExampleSnapshot";
 
 export class Example extends Aggregate {
     type = "Example";
+    toSnapshot(): ExampleSnapshot {
+        const { name, status, userId } = this;
+        return { name, status, userId }
+    }
     private static initialStatus: ExampleStatus = ExampleStatus.Active;
 
     private status?: ExampleStatus;
@@ -42,6 +43,9 @@ export class Example extends Aggregate {
 
     getName() {
         return this.name;
+    }
+    getStatus() {
+        return this.status;
     }
     getUserId() {
         return this.userId;

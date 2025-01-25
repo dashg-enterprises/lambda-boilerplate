@@ -1,4 +1,4 @@
-import { IDomainCommand, IDomainEvent, Snapshot } from "@dashg-enterprises/ddd-platform";
+import { IDomainCommand, IDomainEvent, ISnapshot } from "@dashg-enterprises/ddd-platform";
 
 export interface LambdaResponse {
     isBase64Encoded: boolean,
@@ -8,7 +8,7 @@ export interface LambdaResponse {
     body: string
 };
 
-export function responseFrom(whatHappened: [IDomainEvent, Snapshot]): LambdaResponse {
+export function responseFrom(whatHappened: [IDomainEvent, ISnapshot]): LambdaResponse {
     const [domainEvent, snapshot] = whatHappened;
     return createResponse(200, {
         domainEvent,
