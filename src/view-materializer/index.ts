@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { APIGatewayProxyResult, APIGatewayEvent, Handler, SQSEvent } from 'aws-lambda';
+import { APIGatewayProxyResult, APIGatewayEvent, Handler, SQSEvent, SNSMessage } from 'aws-lambda';
 import { host } from './inversify.config';
 import { TYPES } from './TYPES';
 import { IExampleRepository } from './infrastructure/IExampleRepository';
@@ -16,14 +16,15 @@ function responseFrom(example: Example) {
 export const handler: Handler<SQSEvent> = async (awsEvent, context): Promise<LambdaResponse> => {
     console.log(`Event: ${JSON.stringify(awsEvent, null, 2)}`);
     console.log(`Context: ${JSON.stringify(context, null, 2)}`);
-    const rawDomainEvent = awsEvent.Records[0].body;
-    const domainEvent = JSON.parse(rawDomainEvent) as IDomainEvent;
+    const rawSnsMessage = awsEvent.Records[0].body;
+    const snsMessage = JSON.parse(rawSnsMessage) as SNSMessage;
+    const domainEvent = JSON.parse(snsMessage.Message) as IDomainEvent;
 
     try {
         switch (true) {
             case ExampleCreated.isTypeOf(domainEvent): {
                 const exampleCreated: ExampleCreated = domainEvent;
-                
+
                 const newExample = new Example();
                 newExample.id = exampleCreated.event.exampleId;
                 newExample.name = exampleCreated.event.name;
