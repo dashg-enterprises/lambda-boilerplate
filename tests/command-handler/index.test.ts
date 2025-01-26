@@ -2,11 +2,12 @@ import 'reflect-metadata';
 import {describe, expect, jest, test} from '@jest/globals';
 import { Example } from '../../src/command-handler/domain/Example';
 import { CreateExample, CreateExampleCommand } from '../../src/command-handler/commands/CreateExample';
-import { handler, LambdaResponse } from '../../src/command-handler';
+import { handler } from '../../src/command-handler';
 import { EventLogRepository, IAggregateRepository, IDomainCommand, IDomainEventBroadcaster, IDomainEventPublisher, IEventLogRepository, ISnapshotRepository, PLATFORM_TYPES } from '@dashg-enterprises/ddd-platform';
 import { host } from '../../src/command-handler/inversify.config';
 
 import { Mock, mock } from 'ts-jest-mocker';
+import { LambdaResponse } from '../../src/command-handler/infrastructure/LambdaResponse';
 
 describe("A command handler", () => {
     beforeEach(() => {
