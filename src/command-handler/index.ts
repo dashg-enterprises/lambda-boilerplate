@@ -11,7 +11,7 @@ import { LambdaResponse, badRequest, responseFrom, notFound } from './infrastruc
 export const handler: Handler<SQSEvent & APIGatewayEvent, LambdaResponse> = async (awsEvent, context) => {
     let command: IDomainCommand;
     try {
-        console.debug('EVENT: \n' + JSON.stringify(awsEvent, null, 2));
+        console.debug('AWS EVENT: \n' + JSON.stringify(awsEvent, null, 2));
         const rawCommand = awsEvent.body ?? awsEvent.Records[0].body;
         command = JSON.parse(rawCommand) as IDomainCommand;
         console.debug(JSON.stringify(command));
