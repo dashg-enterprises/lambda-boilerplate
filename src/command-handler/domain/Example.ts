@@ -19,11 +19,13 @@ export class Example extends Aggregate {
     }
 
     protected registerHandlers() {
-        this.registerHandler(CreateExample.metadata.type, this.create.bind(this));
+        return this
+            .withHandler(CreateExample.metadata.type, this.create.bind(this))
     }
 
     protected registerAppliers() {
-        this.registerApplier(ExampleCreated.metadata.type, this.created.bind(this));
+        return this
+            .withApplier(ExampleCreated.metadata.type, this.created.bind(this));
     }
 
     create(createExample: CreateExample) {
