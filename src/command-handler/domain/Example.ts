@@ -18,20 +18,12 @@ export class Example extends Aggregate {
         super(eventLog);
     }
 
-    protected registerHandlers(): IHandlerMap {
-        let handlers = this
-            .withHandler(this.create.bind(this))
-            .for(CreateExample.metadata.type);
-
-        return handlers;
+    protected registerHandlers() {
+        this.registerHandler(CreateExample.metadata.type, this.create.bind(this));
     }
 
-    protected registerAppliers(): IApplierMap {
-        let appliers = this
-            .withApplier(this.created.bind(this))
-            .for(ExampleCreated.metadata.type);
-
-        return appliers;
+    protected registerAppliers() {
+        this.registerApplier(ExampleCreated.metadata.type, this.created.bind(this));
     }
 
     create(createExample: CreateExample) {
