@@ -17,14 +17,16 @@ export class ScheduleExampleHandler extends CustomHandlerBase<Example, ScheduleE
         await this.utilities.issue(delayedCreateExample, scheduleExample.command.nextRunInSeconds);
         const exampleScheduled = new ExampleScheduled(
             new ExampleScheduledEvent(
-                `delayed-${delayedCreateExample.correlationId}`,
+                `delayed-${delayedCreateExample.metadata.correlationId}`,
                 delayedCreateExample.command.name
             ),
             scheduleExample
         );
         return [
             exampleScheduled,
-            {} // no aggregate created yet!
+            {
+                id: exampleScheduled.metadata.correlationId
+            } // no aggregate created yet!
         ];
     }
 }

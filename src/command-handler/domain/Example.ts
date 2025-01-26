@@ -8,11 +8,11 @@ import { ExampleSnapshot } from "../contracts/ExampleSnapshot";
 export class Example extends Aggregate {
     public readonly type = "Example";
 
-    private static _initialStatus: ExampleStatus = ExampleStatus.Active;
+    private static initialStatus: ExampleStatus = ExampleStatus.Active;
 
-    private _status?: ExampleStatus;
-    private _name?: string;
-    private _userId?: string;
+    private status?: ExampleStatus;
+    private name?: string;
+    private userId?: string;
 
     constructor(eventLog?: EventLog) {
         super(eventLog);
@@ -33,34 +33,30 @@ export class Example extends Aggregate {
             this.id,
             createExample.command.userId,
             createExample.command.name,
-            Example._initialStatus
+            Example.initialStatus
         );
         const domainEvent = new ExampleCreated(exampleCreatedEvent, createExample);
         return domainEvent;
     }
 
     created(exampleCreated: ExampleCreated) {
-        this._name = exampleCreated.event.name;
-        this._userId = exampleCreated.event.userId;
-        this._status = ExampleStatus[exampleCreated.event.status as keyof typeof ExampleStatus];
+        this.name = exampleCreated.event.name;
+        this.userId = exampleCreated.event.userId;
+        this.status = ExampleStatus[exampleCreated.event.status as keyof typeof ExampleStatus];
     }
 
     getName() {
-        return this._name;
+        return this.name;
     }
     getStatus() {
-        return this._status;
+        return this.status;
     }
     getUserId() {
-        return this._userId;
+        return this.userId;
     }
 
     toSnapshot(): ExampleSnapshot {
-        const { _name, _status, _userId } = this;
-        return { 
-            name: _name,
-            status: _status,
-            userId: _userId
-        };
+        const { id, name, status, userId } = this;
+        return new ExampleSnapshot({ id, name, status, userId });
     }
 }
