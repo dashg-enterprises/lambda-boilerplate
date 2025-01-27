@@ -2,11 +2,9 @@ import { inject } from "inversify";
 import { TYPES } from "../../view-materializer/TYPES";
 import { APIGatewayEvent } from 'aws-lambda';
 import { IExampleRepository } from "../../view-materializer/infrastructure/IExampleRepository";
-import { LambdaControllerBase } from "./base/LambdaControllerBase";
 import { IExampleController } from "./IExampleController";
 import { QUERY_ORDER } from "@typedorm/common";
-import { Paginated } from "./base/Paginated";
-import { Example } from "../../view-materializer/infrastructure/Example";
+import { LambdaControllerBase } from "@dashg-enterprises/ddd-platform";
 
 export default class ExampleController extends LambdaControllerBase implements IExampleController {
     private readonly repo: IExampleRepository;

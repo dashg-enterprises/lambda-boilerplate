@@ -1,11 +1,9 @@
 import { EntityManager, ScanManager } from '@typedorm/core';
-import { RepositoryBase } from './RepositoryBase';
 import { Example, ExampleMetadata } from './Example';
 import { IExampleRepository } from './IExampleRepository';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../TYPES';
-import { PLATFORM_TYPES } from '../PLATFORM_TYPES';
-import { PartitionMetadata } from './PartitionMetadata';
+import { PartitionMetadata, PLATFORM_TYPES, RepositoryBase } from '@dashg-enterprises/ddd-platform';
 
 export type ExamplePartitionKey = Pick<Example, 'userId'>;
 export type ExampleSortKey = Pick<Example, 'id'>;

@@ -1,29 +1,24 @@
+import { PartitionMetadata } from '@dashg-enterprises/ddd-platform';
 import {Attribute, Entity, AutoGenerateAttribute, INDEX_TYPE} from '@typedorm/common';
 import {AUTO_GENERATE_ATTRIBUTE_STRATEGY} from '@typedorm/common';
-import { PartitionMetadata } from './PartitionMetadata';
 
-export const ExampleMetadata: PartitionMetadata<Example> = {
-  name: 'example',
+
+export const ExampleMetadata = new PartitionMetadata<Example>({
+  entityName: 'example',
   primaryKey: {
-    partitionKey: 'EXAMPLE#{{userId}}',
-    sortKey: 'EXAMPLE#{{id}}',
+    partitionKeyName: 'userId',
+    sortKeyName: 'id'
   },
-  indexes: {
-    // specify GSI1 key - "GSI1" named global secondary index needs to exist in above table declaration
-    GSI1: {
-      partitionKey: 'EXAMPLE#{{userId}}#STATUS#{{status}}',
-      sortKey: 'EXAMPLE#{{userId}}#NAME#{{name}}',
-      type: INDEX_TYPE.GSI,
-    },
-    // specify LSI1 key
-    LSI1: {
-      sortKey: 'UPDATED_AT#{{updatedAt}}',
-      type: INDEX_TYPE.LSI,
-    },
-  },
-};
+  globalSecondaryIndexes: [{
+    partitionKeyName: 'status',
+    sortKeyName: 'name'
+  }],
+  localSecondaryIndexes: [{
+    sortKeyName: 'updatedAt'
+  }]
+});  
 
-@Entity(ExampleMetadata)
+@Entity(ExampleMetadata.decorate())
 export class Example {
   @Attribute()
   id!: string;
