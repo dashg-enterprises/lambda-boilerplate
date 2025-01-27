@@ -38,7 +38,7 @@
     "@typedorm/common": "^1.15.4",
     "@typedorm/core": "^1.15.4",
     "aws-lambda": "^1.0.7",
-    "inversify": "^6.1.4",
+    "inversify": "6.1.4",
     "reflect-metadata": "^0.1.14",
     "uuid": "^10.0.0"
   }
