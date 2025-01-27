@@ -12,14 +12,13 @@ import { ExamplePartitionKey, ExampleRepository, ExampleSortKey } from "./infras
 // import express from 'express';
 // exports.handler = serverlessExpress({ app })
 
-const container = new Container();
-container.bind<IExampleRepository>(TYPES.IExampleRepository).to(ExampleRepository);
-container.bind<IExampleController>(TYPES.IExampleController).to(ExampleController);
-
 export const host = new Host()
     .withMaterializedView<
         Example,
         ExamplePartitionKey,
         ExampleSortKey,
-        ExampleRepository
-    >(Example, ExampleMetadata, ExampleRepository);
+        ExampleRepository,
+        IExampleRepository,
+        ExampleController,
+        IExampleController
+    >(Example, ExampleRepository, TYPES.IExampleRepository, ExampleController, TYPES.IExampleController);
