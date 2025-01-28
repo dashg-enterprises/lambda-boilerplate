@@ -31,6 +31,8 @@ export const handler: Handler<SQSEvent> = async (awsEvent, context): Promise<Lam
                 newExample.userId = exampleCreated.event.userId;
                 newExample.status = exampleCreated.event.status;
 
+                console.log(host.eject());
+
                 const exampleRepo = host.get<IExampleRepository>(TYPES.IExampleRepository);
                 const createdExample = await exampleRepo.create(newExample);
                 return responseFrom(createdExample);
