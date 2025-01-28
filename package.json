@@ -39,6 +39,7 @@
     "@typedorm/common": "^1.15.4",
     "@typedorm/core": "^1.15.4",
     "aws-lambda": "^1.0.7",
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "inversify": "^6.1.4",
     "reflect-metadata": "^0.1.14",
