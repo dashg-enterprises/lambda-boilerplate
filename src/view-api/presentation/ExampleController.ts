@@ -1,4 +1,4 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../view-materializer/TYPES";
 import { APIGatewayEvent } from 'aws-lambda';
 import { IExampleRepository } from "../../view-materializer/infrastructure/IExampleRepository";
@@ -6,6 +6,7 @@ import { IExampleController } from "./IExampleController";
 import { QUERY_ORDER } from "@typedorm/common";
 import { LambdaControllerBase } from "@dashg-enterprises/ddd-platform";
 
+@injectable()
 export default class ExampleController extends LambdaControllerBase implements IExampleController {
     private readonly repo: IExampleRepository;
     constructor(@inject(TYPES.IExampleRepository) repo: IExampleRepository) {
