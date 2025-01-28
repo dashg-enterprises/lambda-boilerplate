@@ -1,12 +1,10 @@
 import { Host, HostApi } from "@dashg-enterprises/ddd-platform";
-import { Container } from "inversify";
 import { TYPES } from "./TYPES";
 import { IExampleRepository } from "./infrastructure/IExampleRepository";
-import { IExampleController } from "../view-api/presentation/IExampleController";
-import ExampleController from "../view-api/presentation/ExampleController";
-import { Example, ExampleMetadata } from "./infrastructure/Example";
+import { Example } from "./infrastructure/Example";
 import { ExamplePartitionKey, ExampleRepository, ExampleSortKey } from "./infrastructure/ExampleRepository";
 import "../view-api/presentation/HealthCheckController";
+import "../view-api/presentation/ExampleController";
 
 export const host = new Host()
     .withMaterializedView<
@@ -14,9 +12,7 @@ export const host = new Host()
         ExamplePartitionKey,
         ExampleSortKey,
         ExampleRepository,
-        IExampleRepository,
-        ExampleController,
-        IExampleController
-    >(Example, ExampleRepository, TYPES.IExampleRepository, ExampleController, TYPES.IExampleController);
+        IExampleRepository
+    >(Example, ExampleRepository, TYPES.IExampleRepository);
 
 export const hostApi = new HostApi(host);
